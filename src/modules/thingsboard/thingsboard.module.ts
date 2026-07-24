@@ -6,7 +6,7 @@ import { ThingsBoardService } from "./thingsboard.service.js";
 @Module({
     name: "thingsboard",
 
-    description: "ThingsBoard MCP Module",
+    description: "ThingsBoard Module",
 
     controllers: [
         ThingsBoardTools

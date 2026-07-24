@@ -1,37 +1,37 @@
-import { McpApp, Module, ConfigModule } from '@nitrostack/core';
-import { CalculatorModule } from './modules/calculator/calculator.module.js';
-import { SystemHealthCheck } from './health/system.health.js';
+import { McpApp, Module, ConfigModule } from "@nitrostack/core";
+
+import { CalculatorModule } from "./modules/calculator/calculator.module.js";
 import { ThingsBoardModule } from "./modules/thingsboard/thingsboard.module.js";
-/**
- * Root Application Module
- * 
- * This is the main module that bootstraps the MCP server.
- * It registers all feature modules and health checks.
- */
+
+import { SystemHealthCheck } from "./health/system.health.js";
+
 @McpApp({
-  module: AppModule,
-  server: {
-    name: "calculator-server",
-    version: "1.0.0"
-  },
-  logging: {
-    level: "info"
-  }
+    module: AppModule,
+
+    server: {
+        name: "dtaas-server",
+        version: "1.0.0"
+    },
+
+    logging: {
+        level: "info"
+    }
 })
 
 @Module({
-  name: "app",
-  description: "Root application module",
+    name: "app",
 
-  imports: [
-    ConfigModule.forRoot(),
-    CalculatorModule,
-    ThingsBoardModule      // <-- Add this
-  ],
+    description: "DTaaS MCP Server",
 
-  providers: [
-    SystemHealthCheck
-  ]
+    imports: [
+        ConfigModule.forRoot(),
+        CalculatorModule,
+        ThingsBoardModule
+    ],
+
+    providers: [
+        SystemHealthCheck
+    ]
 })
 
 export class AppModule {}
