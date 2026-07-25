@@ -129,22 +129,26 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
      */
     async syncDeviceHistory(
         deviceId: string,
-        keys: string[],
+        keys: string[] | string,
         startTs: number,
         endTs: number
     ): Promise<number> {
+        const keyList = typeof keys === "string"
+            ? keys.split(",").map(k => k.trim()).filter(Boolean)
+            : keys;
+
         // Validate inputs
         if (endTs < startTs) {
             throw new Error("endTs must be greater than or equal to startTs");
         }
-        if (keys.length === 0) {
+        if (!keyList || keyList.length === 0) {
             throw new Error("metrics/keys list cannot be empty");
         }
 
-        console.log(`Backfilling history for device ${deviceId} [${startTs} -> ${endTs}] for keys: ${keys.join(",")}`);
+        console.log(`Backfilling history for device ${deviceId} [${startTs} -> ${endTs}] for keys: ${keyList.join(",")}`);
         
         // Fetch telemetry from ThingsBoard
-        const telemetryData = await this.tbClient.getTelemetryRange(deviceId, keys, startTs, endTs);
+        const telemetryData = await this.tbClient.getTelemetryRange(deviceId, keyList, startTs, endTs);
         
         // Convert to database rows
         const readings: TelemetryReading[] = [];
