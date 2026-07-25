@@ -447,4 +447,42 @@ export class ThingsBoardTools {
             return { success: false, message: e.response?.data ?? e.message };
         }
     }
+
+    @Tool({
+        name: "create_emulator",
+        description: "Provisions and starts a virtual IoT emulator device based on the emulator catalog.",
+        inputSchema: z.object({
+            deviceName: z.string().describe("Custom name for the virtual emulator device (e.g., 'smart-home-energy-hub-002')"),
+            emulatorType: z.string().default("smart-home-energy-hub").describe("The emulator catalog type string (e.g., 'smart-home-energy-hub')"),
+            scenario: z.string().default("Typical Day").describe("Initial behavior scenario (e.g., 'Typical Day', 'Grid Blackout', 'High Peak Demand')"),
+            telemetryRateSeconds: z.number().default(5).describe("Telemetry streaming interval in seconds")
+        })
+    })
+    async createEmulator(
+        input: { 
+            deviceName: string; 
+            emulatorType?: string; 
+            scenario?: string; 
+            telemetryRateSeconds?: number; 
+        },
+        ctx: ExecutionContext
+    ) {
+        ctx.logger.info(`Provisioning emulator '${input.deviceName}'`);
+        try {
+            const result = await service.createEmulatorDevice(
+                input.deviceName,
+                input.emulatorType ?? "smart-home-energy-hub",
+                input.scenario ?? "Typical Day",
+                input.telemetryRateSeconds ?? 5
+            );
+
+            return {
+                success: true,
+                message: `Virtual emulator '${input.deviceName}' created successfully.`,
+                emulator: result
+            };
+        } catch (e: any) {
+            return { success: false, message: e.response?.data ?? e.message };
+        }
+    }
 }

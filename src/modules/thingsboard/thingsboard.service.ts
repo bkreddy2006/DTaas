@@ -183,4 +183,53 @@ export class ThingsBoardService {
         );
         return response.data; 
     }
+
+    // --- Emulator Methods ---
+
+    /**
+     * Searches or fetches device profile templates for emulator creation
+     */
+    async getEmulatorCatalog(pageSize = 100) {
+        const response = await axios.get(
+            `${this.TB_URL}/api/deviceProfiles`,
+            { 
+                headers: this.headers, 
+                params: { pageSize, page: 0 } 
+            }
+        );
+        return response.data;
+    }
+
+    /**
+     * Provisions an emulator device entity in ThingsBoard
+     */
+    async createEmulatorDevice(
+        deviceName: string, 
+        emulatorType: string = "smart-home-energy-hub", 
+        scenario: string = "Typical Day", 
+        telemetryRateSeconds: number = 5
+    ) {
+        // Create standard device marked as EMULATOR in type/additionalInfo
+        const deviceResponse = await axios.post(
+            `${this.TB_URL}/api/device`,
+            {
+                name: deviceName,
+                type: emulatorType,
+                additionalInfo: {
+                    isEmulator: true,
+                    emulatorScenario: scenario,
+                    telemetryRate: telemetryRateSeconds
+                }
+            },
+            { headers: this.headers }
+        );
+
+        return {
+            device: deviceResponse.data,
+            emulatorType,
+            scenario,
+            telemetryRateSeconds,
+            status: "RUNNING"
+        };
+    }
 }
