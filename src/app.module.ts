@@ -1,6 +1,7 @@
 import { McpApp, Module, ConfigModule } from "@nitrostack/core";
 
 import { ThingsBoardModule } from "./modules/thingsboard/thingsboard.module.js";
+import { DashboardModule } from "./modules/dashboard/dashboard.module.js";
 
 import { SystemHealthCheck } from "./health/system.health.js";
 
@@ -24,7 +25,8 @@ import { SystemHealthCheck } from "./health/system.health.js";
 
     imports: [
         ConfigModule.forRoot(),
-        ThingsBoardModule
+        ThingsBoardModule,
+        DashboardModule
     ],
 
     providers: [
@@ -32,4 +34,4 @@ import { SystemHealthCheck } from "./health/system.health.js";
     ]
 })
 
-export class AppModule {}
+export class AppModule { }
