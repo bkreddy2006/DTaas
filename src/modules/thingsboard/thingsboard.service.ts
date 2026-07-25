@@ -12,7 +12,7 @@ export class ThingsBoardService {
         "X-Authorization": `ApiKey ${this.API_KEY}`
     };
 
-    // --- Existing Device Method ---
+    // --- Device Methods ---
     async createDevice(deviceName: string, deviceType: string, label?: string) {
         const response = await axios.post(
             `${this.TB_URL}/api/device`,
@@ -109,7 +109,6 @@ export class ThingsBoardService {
     }
 
     async getDeviceProfileByName(profileName: string) {
-        // Fetches default/existing profiles using a tenant page query
         const response = await axios.get(
             `${this.TB_URL}/api/deviceProfiles`,
             { 
@@ -128,6 +127,16 @@ export class ThingsBoardService {
         );
         return response.data;
     }   
+
+    // Added: Creates a standalone alarm rule in ThingsBoard's "Actual" rules tab
+    async createStandaloneAlarmRule(ruleData: any) {
+        const response = await axios.post(
+            `${this.TB_URL}/api/alarm/rule`,
+            ruleData,
+            { headers: this.headers }
+        );
+        return response.data;
+    }
 
     // --- User Management Methods ---
     
@@ -169,7 +178,7 @@ export class ThingsBoardService {
             `${this.TB_URL}/api/user/${userId}/activationLink`,
             { 
                 headers: this.headers, 
-                responseType: 'text' // ThingsBoard returns a raw string for this endpoint, not JSON
+                responseType: 'text' 
             }
         );
         return response.data; 
