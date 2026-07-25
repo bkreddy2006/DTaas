@@ -86,4 +86,80 @@ export class ThingsBoardTools {
 
     }
 
+    @Tool({
+
+        name: "delete_device",
+
+        description: "Delete an existing device by its name from ThingsBoard Cloud",
+
+        inputSchema: z.object({
+
+            deviceName: z.string()
+                .describe("The name of the device to delete")
+
+        })
+
+    })
+
+    async deleteDevice(
+
+        input: {
+            deviceName: string;
+        },
+
+        ctx: ExecutionContext
+
+    ) {
+
+        ctx.logger.info(
+            `Attempting to delete device named: ${input.deviceName}`
+        );
+
+        try {
+
+            // Step 1: Find the device by name to get its ID
+            const device = await service.getTenantDevice(input.deviceName);
+
+            if (!device || !device.id || !device.id.id) {
+                return {
+                    status: "ERROR",
+                    message: `Device with name '${input.deviceName}' not found.`,
+                    deviceName: input.deviceName
+                };
+            }
+
+            const deviceId = device.id.id;
+
+            // Step 2: Delete using the retrieved ID
+            await service.deleteDevice(deviceId);
+
+            return {
+
+                status: "OK",
+
+                message: `Device '${input.deviceName}' (ID: ${deviceId}) deleted successfully.`,
+
+                deviceName: input.deviceName
+
+            };
+
+        } catch (e: any) {
+
+            return {
+
+                status: "ERROR",
+
+                message:
+                    e.response?.data?.message ??
+                    e.response?.data ??
+                    e.message,
+
+                deviceName: input.deviceName
+
+            };
+
+        }
+
+    }
+
 }
