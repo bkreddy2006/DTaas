@@ -128,4 +128,50 @@ export class ThingsBoardService {
         );
         return response.data;
     }   
+
+    // --- User Management Methods ---
+    
+    async saveUser(userData: any, sendActivationMail: boolean = false) {
+        const response = await axios.post(
+            `${this.TB_URL}/api/user?sendActivationMail=${sendActivationMail}`,
+            userData,
+            { headers: this.headers }
+        );
+        return response.data;
+    }
+
+    async getUserById(userId: string) {
+        const response = await axios.get(
+            `${this.TB_URL}/api/user/${userId}`,
+            { headers: this.headers }
+        );
+        return response.data;
+    }
+
+    async deleteUser(userId: string) {
+        const response = await axios.delete(
+            `${this.TB_URL}/api/user/${userId}`,
+            { headers: this.headers }
+        );
+        return response.data || { status: "OK", id: userId };
+    }
+
+    async getTenantUsers(params: any) {
+        const response = await axios.get(
+            `${this.TB_URL}/api/tenant/users`,
+            { headers: this.headers, params }
+        );
+        return response.data;
+    }
+
+    async getActivationLink(userId: string) {
+        const response = await axios.get(
+            `${this.TB_URL}/api/user/${userId}/activationLink`,
+            { 
+                headers: this.headers, 
+                responseType: 'text' // ThingsBoard returns a raw string for this endpoint, not JSON
+            }
+        );
+        return response.data; 
+    }
 }
