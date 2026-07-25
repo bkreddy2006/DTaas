@@ -1,6 +1,5 @@
 import { McpApp, Module, ConfigModule } from "@nitrostack/core";
 
-import { CalculatorModule } from "./modules/calculator/calculator.module.js";
 import { ThingsBoardModule } from "./modules/thingsboard/thingsboard.module.js";
 
 import { SystemHealthCheck } from "./health/system.health.js";
@@ -25,7 +24,6 @@ import { SystemHealthCheck } from "./health/system.health.js";
 
     imports: [
         ConfigModule.forRoot(),
-        CalculatorModule,
         ThingsBoardModule
     ],
 
