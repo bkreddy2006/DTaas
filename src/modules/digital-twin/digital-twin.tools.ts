@@ -7,9 +7,6 @@ import {
 import { PlannerService } from "../../agents/planner/planner.service.js";
 import { EngineerService } from "../../agents/engineer/engineer.service.js";
 
-const planner = new PlannerService();
-const engineer = new EngineerService();
-
 export class DigitalTwinTools {
 
     @Tool({
@@ -33,6 +30,9 @@ export class DigitalTwinTools {
 
         try {
 
+            const planner = new PlannerService();
+            const engineer = new EngineerService();
+
             const specification =
                 await planner.analyze(input.prompt);
             ctx.logger.info("===== PLANNER OUTPUT =====");
@@ -52,7 +52,7 @@ ctx.logger.info(JSON.stringify(graph, null, 2));
 
         } catch (e: any) {
 
-            ctx.logger.error(e);
+            ctx.logger.error(`create_digital_twin failed: ${e.message}`);
 
             return {
                 success: false,
