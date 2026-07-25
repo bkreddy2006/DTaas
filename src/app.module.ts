@@ -4,6 +4,8 @@ import { ThingsBoardModule } from "./modules/thingsboard/thingsboard.module.js";
 import { DashboardModule } from "./modules/dashboard/dashboard.module.js";
 import { RuleChainModule } from "./modules/rule-chain/rule-chain.module.js";
 import { DigitalTwinModule } from "./modules/digital-twin/digital-twin.module.js";
+import { SyncModule } from "./modules/sync/sync.module.js";
+import { AnalyticsModule } from "./modules/analytics/analytics.module.js";
 import { SystemHealthCheck } from "./health/system.health.js";
 
 @Module({
@@ -15,7 +17,9 @@ import { SystemHealthCheck } from "./health/system.health.js";
     ThingsBoardModule,
     DashboardModule,
     RuleChainModule,
-    DigitalTwinModule
+    DigitalTwinModule,
+    SyncModule,
+    AnalyticsModule
 ],
 
     providers: [
