@@ -9,11 +9,7 @@ async function main() {
     const engineer = new EngineerService();
 
     const prompt = `
-Create a smart home with
-- 3 smart lights
-- 1 smart plug
-- 1 dashboard
-- High temperature alarm
+Create smart light device
 `;
 
     console.log("========== USER ==========");
