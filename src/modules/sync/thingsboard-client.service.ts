@@ -140,3 +140,5 @@ export class ThingsBoardClientService {
         });
     }
 }
+
+export const thingsboardClientService = new ThingsBoardClientService();

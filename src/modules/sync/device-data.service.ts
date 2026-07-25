@@ -247,3 +247,5 @@ export class DeviceDataService implements OnModuleInit, OnModuleDestroy {
         }));
     }
 }
+
+export const deviceDataService = new DeviceDataService();
