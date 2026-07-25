@@ -1,5 +1,5 @@
 import { Injectable } from "@nitrostack/core";
-import { DeviceDataService, TelemetryReading } from "../sync/device-data.service.js";
+import { DeviceDataService, TelemetryReading, deviceDataService } from "../sync/device-data.service.js";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -29,7 +29,11 @@ export interface DatasetMetadata {
 
 @Injectable()
 export class TelemetryAnalyticsService {
-    constructor(private readonly dataService: DeviceDataService) {}
+    private readonly dataService: DeviceDataService;
+
+    constructor(dataService?: DeviceDataService) {
+        this.dataService = dataService ?? deviceDataService;
+    }
 
     /**
      * Query historical telemetry only from Neon
@@ -235,3 +239,5 @@ export class TelemetryAnalyticsService {
         };
     }
 }
+
+export const telemetryAnalyticsService = new TelemetryAnalyticsService();

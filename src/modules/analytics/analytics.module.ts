@@ -1,6 +1,6 @@
 import { Module } from "@nitrostack/core";
 import { SyncModule } from "../sync/sync.module.js";
-import { TelemetryAnalyticsService } from "./telemetry-analytics.service.js";
+import { TelemetryAnalyticsService, telemetryAnalyticsService } from "./telemetry-analytics.service.js";
 import { AnalyticsTools } from "./analytics.tools.js";
 
 @Module({
@@ -13,7 +13,7 @@ import { AnalyticsTools } from "./analytics.tools.js";
         AnalyticsTools
     ],
     providers: [
-        TelemetryAnalyticsService
+        { provide: TelemetryAnalyticsService, useValue: telemetryAnalyticsService }
     ],
     exports: [
         TelemetryAnalyticsService

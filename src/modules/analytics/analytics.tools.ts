@@ -1,9 +1,9 @@
 import { ToolDecorator as Tool, ExecutionContext, Injectable, z } from "@nitrostack/core";
-import { TelemetryAnalyticsService } from "./telemetry-analytics.service.js";
+import { TelemetryAnalyticsService, telemetryAnalyticsService } from "./telemetry-analytics.service.js";
 
 @Injectable()
 export class AnalyticsTools {
-    constructor(private readonly analyticsService: TelemetryAnalyticsService) {}
+    private readonly analyticsService: TelemetryAnalyticsService = telemetryAnalyticsService;
 
     @Tool({
         name: "query_device_history",
