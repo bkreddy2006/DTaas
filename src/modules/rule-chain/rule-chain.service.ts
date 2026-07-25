@@ -110,18 +110,45 @@ export class RuleChainService {
         };
     }
 
-    async searchComponents(query: string) {
+    async searchComponents(query: string, type?: string) {
         const response = await axios.get(
             `${TB_URL}/api/components?componentTypes=ENRICHMENT,FILTER,TRANSFORMATION,ACTION,EXTERNAL`,
             { headers: headers() }
         );
         const list = response.data as any[];
 
-        const term = query.toLowerCase();
-        return list.filter(c =>
-            (c.name && c.name.toLowerCase().includes(term)) ||
-            (c.clazz && c.clazz.toLowerCase().includes(term))
-        ).map(c => ({
+        const keywords = query.toLowerCase().split(/\s+/);
+        let matched = list.filter(c => {
+            const name = (c.name || "").toLowerCase();
+            const clazz = (c.clazz || "").toLowerCase();
+            const cType = (c.type || "").toLowerCase();
+            
+            return keywords.every(kw => 
+                name.includes(kw) || clazz.includes(kw) || cType.includes(kw)
+            );
+        });
+
+        if (type) {
+            const targetType = type.toUpperCase();
+            matched = matched.filter(c => c.type === targetType);
+        }
+
+        return matched.sort((a, b) => {
+            const aName = (a.name || "").toLowerCase();
+            const bName = (b.name || "").toLowerCase();
+            const aClazz = (a.clazz || "").toLowerCase();
+            const bClazz = (b.clazz || "").toLowerCase();
+            const firstKw = keywords[0];
+
+            if (aClazz === query.toLowerCase()) return -1;
+            if (bClazz === query.toLowerCase()) return 1;
+            if (aName === query.toLowerCase()) return -1;
+            if (bName === query.toLowerCase()) return 1;
+            if (aName.startsWith(firstKw) && !bName.startsWith(firstKw)) return -1;
+            if (!aName.startsWith(firstKw) && bName.startsWith(firstKw)) return 1;
+
+            return 0;
+        }).map(c => ({
             name: c.name,
             clazz: c.clazz,
             type: c.type,
@@ -134,14 +161,15 @@ export class RuleChainService {
         ruleChainIdOrName: string | undefined,
         nodeName: string,
         componentClassOrName: string,
-        configuration?: any
+        configuration?: any,
+        componentType?: string
     ) {
         const ruleChainId = await this.resolveRuleChainId(ruleChainIdOrName);
 
         // 1. Resolve component class
-        const components = await this.searchComponents(componentClassOrName);
+        const components = await this.searchComponents(componentClassOrName, componentType);
         if (components.length === 0) {
-            throw new Error(`Component class or name matching "${componentClassOrName}" not found.`);
+            throw new Error(`Component class or name matching "${componentClassOrName}"${componentType ? ` of type ${componentType}` : ""} not found.`);
         }
         const component = components[0]; // pick first matching component
 

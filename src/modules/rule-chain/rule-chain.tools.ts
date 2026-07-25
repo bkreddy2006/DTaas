@@ -166,6 +166,7 @@ export class RuleChainTools {
             ruleChain: z.string().optional().describe("UUID or name of the rule chain. If omitted, targets the most recent one."),
             nodeName: z.string().describe("Descriptive name to assign to the new node (must be unique within this rule chain)"),
             component: z.string().describe("Class name or exact component name (e.g. 'TbFilterMsgNode' or 'script')"),
+            componentType: z.enum(["ENRICHMENT", "FILTER", "TRANSFORMATION", "ACTION", "EXTERNAL"]).optional().describe("Optional category to filter matches (e.g. FILTER, TRANSFORMATION)"),
             configuration: z.record(z.any()).optional().describe("Optional component-specific settings / JSON block")
         })
     })
@@ -174,17 +175,19 @@ export class RuleChainTools {
             ruleChain?: string;
             nodeName: string;
             component: string;
+            componentType?: string;
             configuration?: any;
         },
         ctx: ExecutionContext
     ) {
-        ctx.logger.info(`Adding node "${input.nodeName}" (type: "${input.component}") to rule chain "${input.ruleChain ?? "(most recent)"}"`);
+        ctx.logger.info(`Adding node "${input.nodeName}" (type: "${input.component}"${input.componentType ? `, category: "${input.componentType}"` : ""}) to rule chain "${input.ruleChain ?? "(most recent)"}"`);
         try {
             const result = await service.addNodeToRuleChain(
                 input.ruleChain,
                 input.nodeName,
                 input.component,
-                input.configuration
+                input.configuration,
+                input.componentType
             );
             return {
                 success: true,
