@@ -103,3 +103,52 @@ DATABASE_URL=postgresql://neondb_owner:...
 - `"Export ECG telemetry from the last month as CSV."`
 - `"Generate a JSON training dataset for all ventilators."`
 - `"Generate a CSV dataset containing battery, CPU, and memory telemetry for all infusion pumps."`
+
+---
+
+## 3D Visualization Capabilities
+
+The server provides 3D visualization capabilities using Three.js (loaded via CDN) to render device twins, mapping real-time or historical telemetry metrics onto 3D parts' properties (such as rotation speed, color, scale, and opacity).
+
+### 3D Visualization Tools Reference
+
+#### 1. `generate_visual_mapping`
+Uses Gemini AI (`gemini-2.5-flash`) to generate a 3D visual mapping configuration for a device type based on its registered telemetry schema, saving it as `draft`.
+* **Parameters:**
+  * `deviceType` (string, required): The type of device (e.g., `"centrifugal_pump"`).
+
+#### 2. `get_device_3d_view`
+Generates a self-contained HTML scene featuring the 3D model of a device, mapping its latest telemetry readings to the corresponding part properties.
+* **Parameters:**
+  * `deviceId` (string, required): The ThingsBoard Device UUID.
+  * `deviceType` (string, required): The device type.
+* **Response:**
+  * Returns an MCP resource content block under `device-scene://${deviceId}` of mimeType `text/html`, and a fallback text block containing the raw HTML code.
+
+#### 3. `preview_visual_mapping`
+Generates a mock 3D scene preview for a device type using the midpoints of the mapping ranges. This allows checking the visual representation layout and property animations before any telemetry readings are registered.
+* **Parameters:**
+  * `deviceType` (string, required): The device type.
+
+> [!NOTE]
+> Frontend clients (like dashboards or custom control panels) are expected to render the returned `text/html` content inside an `iframe` or `webview`.
+
+### Worked Example: Centrifugal Pump
+
+An example configuration generated for a `centrifugal_pump` device type:
+
+1. **Telemetry Schema**:
+   Registered for `"centrifugal_pump"` containing:
+   - `RPM`: Expected range `[0, 3600]`
+   - `temperature`: Expected range `[20, 120]`
+   - `flow_rate`: Expected range `[0, 100]`
+
+2. **Generated Visual Mapping (`CompositeShape` and properties mapping)**:
+   - **Parts**:
+     - `base` (box): Colored `#555555`, positioned at `[0, -0.6, 0]`.
+     - `body` (cylinder): Colored `#4a90d9`, positioned at `[0, 0, 0]`.
+     - `impeller` (torus): Colored `#ff9900`, positioned at `[0, 0.4, 0]`.
+   - **Mappings**:
+     - `RPM` mapped to `impeller`'s `rotationSpeed` (range `[0, 3600]` to output range `[0, 10]`).
+     - `temperature` mapped to `body`'s `color` (range `[20, 120]` to output colors `[#0000ff, #ff0000]`).
+

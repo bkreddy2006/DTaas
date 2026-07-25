@@ -6,6 +6,7 @@ import { RuleChainModule } from "./modules/rule-chain/rule-chain.module.js";
 import { DigitalTwinModule } from "./modules/digital-twin/digital-twin.module.js";
 import { SyncModule } from "./modules/sync/sync.module.js";
 import { AnalyticsModule } from "./modules/analytics/analytics.module.js";
+import { VisualizationModule } from "./visualization/visualization.module.js";
 import { SystemHealthCheck } from "./health/system.health.js";
 
 @Module({
@@ -19,7 +20,8 @@ import { SystemHealthCheck } from "./health/system.health.js";
     RuleChainModule,
     DigitalTwinModule,
     SyncModule,
-    AnalyticsModule
+    AnalyticsModule,
+    VisualizationModule
 ],
 
     providers: [
