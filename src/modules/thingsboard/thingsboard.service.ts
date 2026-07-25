@@ -13,6 +13,8 @@ export class ThingsBoardService {
         "X-Authorization": `ApiKey ${this.API_KEY}`
     };
 
+    // --- Device Operations ---
+
     async createDevice(
         deviceName: string,
         deviceType: string,
@@ -71,6 +73,73 @@ export class ThingsBoardService {
         const response = await axios.delete(
 
             `${this.TB_URL}/api/device/${deviceId}`,
+
+            {
+                headers: this.headers
+            }
+
+        );
+
+        return response.data;
+
+    }
+
+    // --- Customer Operations ---
+
+    async createCustomer(
+        title: string,
+        email?: string,
+        phone?: string,
+        address?: string,
+        city?: string,
+        country?: string
+    ) {
+
+        const response = await axios.post(
+
+            `${this.TB_URL}/api/customer`,
+
+            {
+                title,
+                email,
+                phone,
+                address,
+                city,
+                country
+            },
+
+            {
+                headers: this.headers
+            }
+
+        );
+
+        return response.data;
+
+    }
+
+    async getTenantCustomer(customerTitle: string) {
+
+        const response = await axios.get(
+
+            `${this.TB_URL}/api/tenant/customers`,
+
+            {
+                headers: this.headers,
+                params: { customerTitle }
+            }
+
+        );
+
+        return response.data;
+
+    }
+
+    async deleteCustomer(customerId: string) {
+
+        const response = await axios.delete(
+
+            `${this.TB_URL}/api/customer/${customerId}`,
 
             {
                 headers: this.headers

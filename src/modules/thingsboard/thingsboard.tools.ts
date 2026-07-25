@@ -10,6 +10,8 @@ const service = new ThingsBoardService();
 
 export class ThingsBoardTools {
 
+    // --- Device Tools ---
+
     @Tool({
 
         name: "create_device",
@@ -155,6 +157,206 @@ export class ThingsBoardTools {
                     e.message,
 
                 deviceName: input.deviceName
+
+            };
+
+        }
+
+    }
+
+    // --- Customer Tools ---
+
+    @Tool({
+
+        name: "create_customer",
+
+        description: "Create a new customer in ThingsBoard Cloud",
+
+        inputSchema: z.object({
+
+            title: z.string()
+                .describe("Title or business name of the customer"),
+
+            email: z.string()
+                .email()
+                .optional()
+                .describe("Customer email address"),
+
+            phone: z.string()
+                .optional()
+                .describe("Customer phone number"),
+
+            address: z.string()
+                .optional()
+                .describe("Customer street address"),
+
+            city: z.string()
+                .optional()
+                .describe("Customer city"),
+
+            country: z.string()
+                .optional()
+                .describe("Customer country")
+
+        })
+
+    })
+
+    async createCustomer(
+
+        input: {
+            title: string;
+            email?: string;
+            phone?: string;
+            address?: string;
+            city?: string;
+            country?: string;
+        },
+
+        ctx: ExecutionContext
+
+    ) {
+
+        ctx.logger.info(
+            `Creating customer: ${input.title}`
+        );
+
+        try {
+
+            const customer = await service.createCustomer(
+
+                input.title,
+
+                input.email,
+
+                input.phone,
+
+                input.address,
+
+                input.city,
+
+                input.country
+
+            );
+
+            return {
+
+                success: true,
+
+                message: `Customer '${input.title}' created successfully.`,
+
+                customer
+
+            };
+
+        } catch (e: any) {
+
+            return {
+
+                success: false,
+
+                message:
+                    e.response?.data?.message ??
+                    e.response?.data ??
+                    e.message
+
+            };
+
+        }
+
+    }
+
+    @Tool({
+
+        name: "delete_customer",
+
+        description: "Delete an existing customer by title or ID from ThingsBoard Cloud",
+
+        inputSchema: z.object({
+
+            customerTitle: z.string()
+                .optional()
+                .describe("The title of the customer to delete"),
+
+            customerId: z.string()
+                .uuid()
+                .optional()
+                .describe("The UUID string of the customer to delete")
+
+        })
+
+    })
+
+    async deleteCustomer(
+
+        input: {
+            customerTitle?: string;
+            customerId?: string;
+        },
+
+        ctx: ExecutionContext
+
+    ) {
+
+        ctx.logger.info(
+            `Attempting to delete customer: ${input.customerTitle || input.customerId}`
+        );
+
+        try {
+
+            let targetId = input.customerId;
+
+            // Step 1: If title is given instead of ID, resolve ID first
+            if (!targetId && input.customerTitle) {
+
+                const customer = await service.getTenantCustomer(input.customerTitle);
+
+                if (!customer || !customer.id || !customer.id.id) {
+                    return {
+                        status: "ERROR",
+                        message: `Customer with title '${input.customerTitle}' not found.`
+                    };
+                }
+
+                targetId = customer.id.id;
+
+            }
+
+            if (!targetId) {
+
+                return {
+
+                    status: "ERROR",
+
+                    message: "Either customerTitle or customerId must be provided."
+
+                };
+
+            }
+
+            // Step 2: Delete using customerId
+            await service.deleteCustomer(targetId);
+
+            return {
+
+                status: "OK",
+
+                message: `Customer (ID: ${targetId}) deleted successfully.`,
+
+                customerId: targetId
+
+            };
+
+        } catch (e: any) {
+
+            return {
+
+                status: "ERROR",
+
+                message:
+                    e.response?.data?.message ??
+                    e.response?.data ??
+                    e.message
 
             };
 
