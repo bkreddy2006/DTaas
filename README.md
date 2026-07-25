@@ -47,3 +47,43 @@ development.
 - YouTube: <https://www.youtube.com/@nitrostackai>
 - LinkedIn: <https://linkedin.com/company/nitrostack-ai/>
 - GitHub: <https://github.com/nitrostackai>
+
+## Simulation Twin Capability
+
+The Simulation Twin module supports AI-assisted generation of a simulation model from a plain-language requirement, followed by safe, deterministic execution of that model.
+
+### Configuration
+
+Add `GEMINI_API_KEY` to your `.env` file:
+```bash
+GEMINI_API_KEY=your_google_gemini_api_key
+```
+
+### Model Lifecycle
+1. **Draft:** When generated via `generate_simulation_model`, models start in `draft` status.
+2. **Reviewed/Trusted:** Models requiring expert review (`requiresExpertReview: true`) must be reviewed and approved via `approve_simulation_model` before they can run.
+3. **Approved:** Approved models can be safely executed.
+
+### Tools
+
+#### 1. `generate_simulation_model`
+Uses AI to draft a simulation model (equations/rates/rules) from a plain-language requirement.
+- **Inputs:**
+  - `requirement` (string): Description of simulation behavior.
+  - `domain` (string, optional): Contextual domain hint.
+
+#### 2. `run_simulation`
+Runs a previously generated simulation model and returns the time-series result.
+- **Inputs:**
+  - `modelId` (string): UUID of the model to run.
+  - `steps` (number, default: 24): Number of steps.
+  - `dt` (number, default: 1): Step size.
+  - `paramOverrides` (object, optional): Overrides for model params.
+
+#### 3. `approve_simulation_model`
+Marks a simulation model as reviewed/trusted, optionally correcting its equations.
+- **Inputs:**
+  - `modelId` (string): UUID of the model.
+  - `reviewedBy` (string): Reviewer name.
+  - `equationOverrides` (object, optional): Formula overrides to fix model rates/equations.
+
