@@ -1,13 +1,11 @@
 import { ToolDecorator as Tool, ExecutionContext, Injectable, z } from "@nitrostack/core";
-import { SyncRegistryService } from "./sync-registry.service.js";
-import { BackgroundSyncService } from "./background-sync.service.js";
+import { SyncRegistryService, syncRegistryService } from "./sync-registry.service.js";
+import { BackgroundSyncService, backgroundSyncService } from "./background-sync.service.js";
 
 @Injectable()
 export class SyncTools {
-    constructor(
-        private readonly registryService: SyncRegistryService,
-        private readonly syncService: BackgroundSyncService
-    ) {}
+    private readonly registryService: SyncRegistryService = syncRegistryService;
+    private readonly syncService: BackgroundSyncService = backgroundSyncService;
 
     @Tool({
         name: "register_device_for_sync",
