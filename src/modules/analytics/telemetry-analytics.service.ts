@@ -40,19 +40,23 @@ export class TelemetryAnalyticsService {
      */
     async queryHistoricalTelemetry(
         deviceId: string,
-        metrics: string[],
+        metrics: string[] | string,
         startTs: number,
         endTs: number
     ): Promise<TelemetryReading[]> {
+        const metricList = typeof metrics === "string"
+            ? metrics.split(",").map(m => m.trim()).filter(Boolean)
+            : metrics;
+
         // Validation
         if (endTs < startTs) {
             throw new Error("endTs must be greater than or equal to startTs");
         }
-        if (metrics.length === 0) {
+        if (!metricList || metricList.length === 0) {
             throw new Error("Metrics list cannot be empty");
         }
 
-        return this.dataService.queryReadings(deviceId, metrics, startTs, endTs);
+        return this.dataService.queryReadings(deviceId, metricList, startTs, endTs);
     }
 
     /**
@@ -111,20 +115,28 @@ export class TelemetryAnalyticsService {
      * Create training dataset (CSV or JSON)
      */
     async createTrainingDataset(
-        deviceIds: string[],
-        metrics: string[],
+        deviceIds: string[] | string,
+        metrics: string[] | string,
         startTs: number,
         endTs: number,
         format: "CSV" | "JSON"
     ): Promise<{ metadata: DatasetMetadata; data: string }> {
+        const deviceIdList = typeof deviceIds === "string"
+            ? deviceIds.split(",").map(id => id.trim()).filter(Boolean)
+            : deviceIds;
+
+        const metricList = typeof metrics === "string"
+            ? metrics.split(",").map(m => m.trim()).filter(Boolean)
+            : metrics;
+
         // Validation
         if (endTs < startTs) {
             throw new Error("endTs must be greater than or equal to startTs");
         }
-        if (deviceIds.length === 0) {
+        if (!deviceIdList || deviceIdList.length === 0) {
             throw new Error("deviceIds list cannot be empty");
         }
-        if (metrics.length === 0) {
+        if (!metricList || metricList.length === 0) {
             throw new Error("metrics list cannot be empty");
         }
 
@@ -138,13 +150,13 @@ export class TelemetryAnalyticsService {
               AND timestamp >= $3
               AND timestamp <= $4
         `;
-        const countRes = await pool.query(countQuery, [deviceIds, metrics, startTs, endTs]);
+        const countRes = await pool.query(countQuery, [deviceIdList, metricList, startTs, endTs]);
         const totalRows = parseInt(countRes.rows[0].count, 10);
 
         const metadata: DatasetMetadata = {
             rowCount: totalRows,
-            deviceCount: deviceIds.length,
-            metricsIncluded: metrics,
+            deviceCount: deviceIdList.length,
+            metricsIncluded: metricList,
             timeRange: { startTs, endTs },
             format,
         };
@@ -175,7 +187,7 @@ export class TelemetryAnalyticsService {
                     ORDER BY timestamp ASC
                     LIMIT $5 OFFSET $6
                 `;
-                const res = await pool.query(query, [deviceIds, metrics, startTs, endTs, batchSize, offset]);
+                const res = await pool.query(query, [deviceIdList, metricList, startTs, endTs, batchSize, offset]);
                 for (const row of res.rows) {
                     output += `${row.timestamp},${row.deviceId},${row.metric},${row.value}\n`;
                 }
@@ -194,7 +206,7 @@ export class TelemetryAnalyticsService {
                     ORDER BY timestamp ASC
                     LIMIT $5 OFFSET $6
                 `;
-                const res = await pool.query(query, [deviceIds, metrics, startTs, endTs, batchSize, offset]);
+                const res = await pool.query(query, [deviceIdList, metricList, startTs, endTs, batchSize, offset]);
                 for (const row of res.rows) {
                     allRows.push({
                         timestamp: parseInt(row.timestamp, 10),
@@ -215,8 +227,8 @@ export class TelemetryAnalyticsService {
      * Export telemetry to CSV file
      */
     async exportTelemetryCSV(
-        deviceIds: string[],
-        metrics: string[],
+        deviceIds: string[] | string,
+        metrics: string[] | string,
         startTs: number,
         endTs: number
     ): Promise<{ filename: string; rowCount: number; csvContent: string }> {
