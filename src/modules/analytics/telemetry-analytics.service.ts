@@ -133,8 +133,8 @@ export class TelemetryAnalyticsService {
         // Count total rows matching criteria first
         const countQuery = `
             SELECT COUNT(*) FROM device_telemetry
-            WHERE device_id = ANY($1)
-              AND metric = ANY($2)
+            WHERE device_id = ANY($1::varchar[])
+              AND metric = ANY($2::varchar[])
               AND timestamp >= $3
               AND timestamp <= $4
         `;
@@ -168,8 +168,8 @@ export class TelemetryAnalyticsService {
                 const query = `
                     SELECT timestamp, device_id as "deviceId", metric, value
                     FROM device_telemetry
-                    WHERE device_id = ANY($1)
-                      AND metric = ANY($2)
+                    WHERE device_id = ANY($1::varchar[])
+                      AND metric = ANY($2::varchar[])
                       AND timestamp >= $3
                       AND timestamp <= $4
                     ORDER BY timestamp ASC
@@ -187,8 +187,8 @@ export class TelemetryAnalyticsService {
                 const query = `
                     SELECT timestamp, device_id as "deviceId", metric, value
                     FROM device_telemetry
-                    WHERE device_id = ANY($1)
-                      AND metric = ANY($2)
+                    WHERE device_id = ANY($1::varchar[])
+                      AND metric = ANY($2::varchar[])
                       AND timestamp >= $3
                       AND timestamp <= $4
                     ORDER BY timestamp ASC
