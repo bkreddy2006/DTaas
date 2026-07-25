@@ -301,7 +301,7 @@ async saveAlarm(alarmData: any) {
             deletedAssetId: assetId,
             status: response.status
         };
-
+    }
 
     async getActivationLink(userId: string) {
         const response = await axios.get(
@@ -362,6 +362,7 @@ async saveAlarm(alarmData: any) {
             telemetryRateSeconds,
             status: "RUNNING"
         };
+    }
     async addEntitiesToGroup(groupId: string, entityIds: string[]) {
         const response = await axios.post(
             `${this.TB_URL}/api/entityGroup/${groupId}/addEntities`,

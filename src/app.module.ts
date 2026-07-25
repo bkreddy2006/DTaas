@@ -21,10 +21,9 @@ import { SystemHealthCheck } from "./health/system.health.js";
         SystemHealthCheck
     ]
 })
-class AppModuleBase {}
 
-export const AppModule = McpApp({
-    module: AppModuleBase,
+@McpApp({
+    module: AppModule,
 
     server: {
         name: "dtaas-server",
@@ -34,5 +33,5 @@ export const AppModule = McpApp({
     logging: {
         level: "info"
     }
-})(AppModuleBase);
+})
 export class AppModule { }
