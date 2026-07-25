@@ -1,7 +1,7 @@
 import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from "@nitrostack/core";
-import { DeviceDataService, TelemetryReading } from "./device-data.service.js";
-import { SyncRegistryService } from "./sync-registry.service.js";
-import { ThingsBoardClientService } from "./thingsboard-client.service.js";
+import { DeviceDataService, TelemetryReading, deviceDataService } from "./device-data.service.js";
+import { SyncRegistryService, syncRegistryService } from "./sync-registry.service.js";
+import { ThingsBoardClientService, thingsboardClientService } from "./thingsboard-client.service.js";
 
 @Injectable()
 export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDestroy {
@@ -9,11 +9,19 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
     private isRunning = false;
     private isSyncing = false; // Lock to prevent overlapping scheduler executions
 
+    private readonly registryService: SyncRegistryService;
+    private readonly tbClient: ThingsBoardClientService;
+    private readonly dataService: DeviceDataService;
+
     constructor(
-        private readonly registryService: SyncRegistryService,
-        private readonly tbClient: ThingsBoardClientService,
-        private readonly dataService: DeviceDataService
-    ) {}
+        registryService?: SyncRegistryService,
+        tbClient?: ThingsBoardClientService,
+        dataService?: DeviceDataService
+    ) {
+        this.registryService = registryService ?? syncRegistryService;
+        this.tbClient = tbClient ?? thingsboardClientService;
+        this.dataService = dataService ?? deviceDataService;
+    }
 
     async onApplicationBootstrap() {
         console.log("🚀 Starting Background Telemetry Synchronization Service...");
@@ -208,3 +216,5 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
         return inserted;
     }
 }
+
+export const backgroundSyncService = new BackgroundSyncService();

@@ -1,13 +1,19 @@
-import { Injectable, Inject } from "@nitrostack/core";
-import { DeviceDataService, SyncRegistryEntry } from "./device-data.service.js";
-import { ThingsBoardClientService } from "./thingsboard-client.service.js";
+import { Injectable } from "@nitrostack/core";
+import { DeviceDataService, SyncRegistryEntry, deviceDataService } from "./device-data.service.js";
+import { ThingsBoardClientService, thingsboardClientService } from "./thingsboard-client.service.js";
 
 @Injectable()
 export class SyncRegistryService {
+    private readonly dataService: DeviceDataService;
+    private readonly tbClient: ThingsBoardClientService;
+
     constructor(
-        private readonly dataService: DeviceDataService,
-        private readonly tbClient: ThingsBoardClientService
-    ) {}
+        dataService?: DeviceDataService,
+        tbClient?: ThingsBoardClientService
+    ) {
+        this.dataService = dataService ?? deviceDataService;
+        this.tbClient = tbClient ?? thingsboardClientService;
+    }
 
     /**
      * Register a device for sync
@@ -134,3 +140,5 @@ export class SyncRegistryService {
         return this.dataService.getRegistryEntry(deviceId);
     }
 }
+
+export const syncRegistryService = new SyncRegistryService();
