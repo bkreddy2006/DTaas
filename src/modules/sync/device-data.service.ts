@@ -148,7 +148,7 @@ export class DeviceDataService implements OnModuleInit, OnModuleDestroy {
             SELECT device_id as "deviceId", metric, value, timestamp
             FROM device_telemetry
             WHERE device_id = $1
-              AND metric = ANY($2)
+              AND metric = ANY($2::varchar[])
               AND timestamp >= $3
               AND timestamp <= $4
             ORDER BY timestamp ASC
