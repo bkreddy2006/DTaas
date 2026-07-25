@@ -11,42 +11,79 @@ const service = new ThingsBoardService();
 export class ThingsBoardTools {
 
     @Tool({
-        name: "create_smart_light",
-        description: "Create a Smart Light device in ThingsBoard Cloud",
+
+        name: "create_device",
+
+        description: "Create any device in ThingsBoard Cloud",
+
         inputSchema: z.object({
-            deviceName: z.string(),
-            label: z.string().optional()
+
+            deviceName: z.string()
+                .describe("Name of the device"),
+
+            deviceType: z.string()
+                .describe("Device type (Smart Light, Smart Plug, Smart Meter, CCTV, etc.)"),
+
+            label: z.string()
+                .optional()
+                .describe("Optional label")
+
         })
+
     })
-    async createSmartLight(
+
+    async createDevice(
+
         input: {
             deviceName: string;
+            deviceType: string;
             label?: string;
         },
+
         ctx: ExecutionContext
+
     ) {
 
-        ctx.logger.info(`Creating Smart Light ${input.deviceName}`);
+        ctx.logger.info(
+            `Creating ${input.deviceType}: ${input.deviceName}`
+        );
 
         try {
 
-            const device = await service.createSmartLight(
+            const device = await service.createDevice(
+
                 input.deviceName,
+
+                input.deviceType,
+
                 input.label
+
             );
 
             return {
+
                 success: true,
+
+                message: `${input.deviceType} created successfully.`,
+
                 device
+
             };
 
         } catch (e: any) {
 
             return {
+
                 success: false,
-                message: e.response?.data ?? e.message
+
+                message:
+                    e.response?.data ??
+                    e.message
+
             };
 
         }
+
     }
+
 }

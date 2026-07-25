@@ -13,12 +13,13 @@ export class ThingsBoardService {
         "X-Authorization": `ApiKey ${this.API_KEY}`
     };
 
-    async createSmartLight(
+    async createDevice(
         deviceName: string,
+        deviceType: string,
         label?: string
     ) {
 
-        // Verify authentication
+        // Optional authentication check
         const user = await axios.get(
             `${this.TB_URL}/api/auth/user`,
             {
@@ -28,15 +29,14 @@ export class ThingsBoardService {
 
         console.log("Logged in as:", user.data.email);
 
-        // Create Device
         const response = await axios.post(
 
             `${this.TB_URL}/api/device`,
 
             {
                 name: deviceName,
-                type: "Smart Light",
-                label: label ?? "Created by NitroStack"
+                type: deviceType,
+                label: label ?? deviceType
             },
 
             {
