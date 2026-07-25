@@ -1,0 +1,407 @@
+{
+  "id": {
+    "entityType": "DASHBOARD",
+    "id": "e10a5430-8814-11f1-a40e-2ba7ae4918b3"
+  },
+  "createdTime": 1784975868147,
+  "tenantId": {
+    "entityType": "TENANT",
+    "id": "8c38e450-86b4-11f1-8b3b-037118875eb0"
+  },
+  "customerId": null,
+  "ownerId": {
+    "entityType": "TENANT",
+    "id": "8c38e450-86b4-11f1-8b3b-037118875eb0"
+  },
+  "title": "demo3",
+  "name": "demo3",
+  "image": null,
+  "assignedCustomers": null,
+  "mobileHide": false,
+  "mobileOrder": null,
+  "configuration": {
+    "description": "",
+    "widgets": {
+      "widget-1784975889029": {
+        "type": "timeseries",
+        "sizeX": 24,
+        "sizeY": 8,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "entityAliasId": "795c87bc-c067-df64-4d7f-02d3661ec2ca",
+              "dataKeys": [
+                {
+                  "name": "humidity",
+                  "type": "timeseries",
+                  "label": "humidity",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "latitude",
+                  "type": "timeseries",
+                  "label": "latitude",
+                  "color": "#4caf50",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "longitude",
+                  "type": "timeseries",
+                  "label": "longitude",
+                  "color": "#ff9800",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "frequency",
+                  "type": "timeseries",
+                  "label": "frequency",
+                  "color": "#e91e63",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "totalPower",
+                  "type": "timeseries",
+                  "label": "totalPower",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "solarPower",
+                  "type": "timeseries",
+                  "label": "solarPower",
+                  "color": "#4caf50",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "totalEnergy",
+                  "type": "timeseries",
+                  "label": "totalEnergy",
+                  "color": "#ff9800",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "batterySoc",
+                  "type": "timeseries",
+                  "label": "batterySoc",
+                  "color": "#e91e63",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "batteryPower",
+                  "type": "timeseries",
+                  "label": "batteryPower",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "co2Level",
+                  "type": "timeseries",
+                  "label": "co2Level",
+                  "color": "#4caf50",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "systemUptime",
+                  "type": "timeseries",
+                  "label": "systemUptime",
+                  "color": "#ff9800",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "voltageL1",
+                  "type": "timeseries",
+                  "label": "voltageL1",
+                  "color": "#e91e63",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "voltageL2",
+                  "type": "timeseries",
+                  "label": "voltageL2",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "outdoorTemp",
+                  "type": "timeseries",
+                  "label": "outdoorTemp",
+                  "color": "#4caf50",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "wifiSignal",
+                  "type": "timeseries",
+                  "label": "wifiSignal",
+                  "color": "#ff9800",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "indoorTemp",
+                  "type": "timeseries",
+                  "label": "indoorTemp",
+                  "color": "#e91e63",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "gridStatus",
+                  "type": "timeseries",
+                  "label": "gridStatus",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "hvacPower",
+                  "type": "timeseries",
+                  "label": "hvacPower",
+                  "color": "#4caf50",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "baseLoadPower",
+                  "type": "timeseries",
+                  "label": "baseLoadPower",
+                  "color": "#ff9800",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                },
+                {
+                  "name": "evPower",
+                  "type": "timeseries",
+                  "label": "evPower",
+                  "color": "#e91e63",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                }
+              ]
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "stack": false,
+            "fontSize": 10,
+            "fontColor": "#545454",
+            "showTooltip": true,
+            "tooltipIndividual": false,
+            "tooltipCumulative": false,
+            "hideZeros": false,
+            "grid": {
+              "verticalLines": true,
+              "horizontalLines": true,
+              "outlineWidth": 1,
+              "color": "#545454",
+              "backgroundColor": null,
+              "tickColor": "#DDDDDD"
+            },
+            "xaxis": {
+              "title": null,
+              "showLabels": true,
+              "color": "#545454"
+            },
+            "yaxis": {
+              "min": null,
+              "max": null,
+              "title": null,
+              "showLabels": true,
+              "color": "#545454",
+              "tickSize": null,
+              "tickDecimals": 0,
+              "ticksFormatter": ""
+            },
+            "shadowSize": 4,
+            "smoothLines": false,
+            "comparisonEnabled": false,
+            "xaxisSecond": {
+              "axisPosition": "top",
+              "title": null,
+              "showLabels": true
+            },
+            "showLegend": true,
+            "legendConfig": {
+              "direction": "column",
+              "position": "bottom",
+              "sortDataKeys": false,
+              "showMin": false,
+              "showMax": false,
+              "showAvg": true,
+              "showTotal": false,
+              "showLatest": false
+            },
+            "customLegendEnabled": false
+          },
+          "title": "humidity, latitude, longitude, frequency, totalPower, solarPower, totalEnergy, batterySoc, batteryPower, co2Level, systemUptime, voltageL1, voltageL2, outdoorTemp, wifiSignal, indoorTemp, gridStatus, hvacPower, baseLoadPower, evPower",
+          "dropShadow": true,
+          "enableFullscreen": true,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "mobileHeight": null,
+          "configMode": "basic",
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": "thermostat",
+          "iconColor": "#1F6BDD"
+        },
+        "typeFullFqn": "system.charts.basic_timeseries",
+        "id": "31b70478-d67e-0275-7997-e001bfd8ecfa",
+        "col": 0,
+        "row": 0
+      },
+      "widget-1784975958182": {
+        "type": "latest",
+        "sizeX": 12,
+        "sizeY": 5,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "entityAliasId": "bb5b8e28-9f19-50b2-07e7-ade6313c7962",
+              "dataKeys": [
+                {
+                  "name": "as",
+                  "type": "timeseries",
+                  "label": "as",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "aggregationType": "NONE"
+                }
+              ]
+            }
+          ],
+          "showTitle": true,
+          "backgroundColor": "#ff5722",
+          "color": "rgba(255, 255, 255, 0.87)",
+          "padding": "16px",
+          "settings": {
+            "labelPosition": "top"
+          },
+          "title": "as",
+          "dropShadow": true,
+          "enableFullscreen": true,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "units": "°C",
+          "decimals": 0,
+          "showLegend": false,
+          "widgetStyle": {},
+          "actions": {},
+          "configMode": "basic"
+        },
+        "typeFullFqn": "system.cards.simple_card",
+        "id": "48bbc4a5-4deb-b866-f6cb-309f09dd55f8",
+        "col": 0,
+        "row": 0
+      }
+    },
+    "entityAliases": {
+      "795c87bc-c067-df64-4d7f-02d3661ec2ca": {
+        "id": "795c87bc-c067-df64-4d7f-02d3661ec2ca",
+        "alias": "Device",
+        "filter": {
+          "type": "singleEntity",
+          "singleEntity": {
+            "entityType": "DEVICE",
+            "id": "0b9ef900-8813-11f1-b480-1301d0f2616d"
+          }
+        }
+      },
+      "bb5b8e28-9f19-50b2-07e7-ade6313c7962": {
+        "id": "bb5b8e28-9f19-50b2-07e7-ade6313c7962",
+        "alias": "Device",
+        "filter": {
+          "type": "singleEntity",
+          "singleEntity": {
+            "entityType": "DEVICE",
+            "id": "5e77a670-8810-11f1-a40e-2ba7ae4918b3"
+          }
+        }
+      }
+    },
+    "states": {
+      "default": {
+        "name": "Default",
+        "root": true,
+        "layouts": {
+          "main": {
+            "widgets": {
+              "widget-1784975889029": {
+                "sizeX": 24,
+                "sizeY": 8,
+                "row": 0,
+                "col": 0
+              },
+              "widget-1784975958182": {
+                "sizeX": 12,
+                "sizeY": 5,
+                "row": 8,
+                "col": 0
+              }
+            },
+            "gridSettings": {
+              "backgroundColor": "#eeeeee",
+              "columns": 24,
+              "margin": 10,
+              "backgroundSizeMode": "100%",
+              "outerMargin": true,
+              "layoutType": "default"
+            }
+          }
+        }
+      }
+    },
+    "filters": {},
+    "timewindow": {
+      "selectedTab": 0,
+      "realtime": {
+        "realtimeType": 0,
+        "timewindowMs": 3600000
+      },
+      "aggregation": {
+        "type": "NONE",
+        "limit": 50000
+      }
+    },
+    "settings": {
+      "stateControllerId": "entity",
+      "showTitle": false,
+      "showDashboardsSelect": true,
+      "showEntitiesSelect": true,
+      "showDashboardTimewindow": true,
+      "showDashboardExport": true,
+      "toolbarAlwaysOpen": true
+    }
+  },
+  "resources": null,
+  "externalId": null,
+  "version": 6
+}

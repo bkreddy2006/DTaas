@@ -1,6 +1,9 @@
 import { McpApp, Module, ConfigModule } from "@nitrostack/core";
 
 import { ThingsBoardModule } from "./modules/thingsboard/thingsboard.module.js";
+import { DashboardModule } from "./modules/dashboard/dashboard.module.js";
+import { RuleChainModule } from "./modules/rule-chain/rule-chain.module.js";
+
 import { SystemHealthCheck } from "./health/system.health.js";
 
 @Module({
@@ -9,7 +12,9 @@ import { SystemHealthCheck } from "./health/system.health.js";
 
     imports: [
         ConfigModule.forRoot(),
-        ThingsBoardModule
+        ThingsBoardModule,
+        DashboardModule,
+        RuleChainModule
     ],
 
     providers: [
@@ -30,3 +35,4 @@ export const AppModule = McpApp({
         level: "info"
     }
 })(AppModuleBase);
+export class AppModule { }
