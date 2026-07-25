@@ -49,4 +49,37 @@ export class ThingsBoardService {
 
     }
 
+    async getTenantDevice(deviceName: string) {
+
+        const response = await axios.get(
+
+            `${this.TB_URL}/api/tenant/device`,
+
+            {
+                headers: this.headers,
+                params: { deviceName }
+            }
+
+        );
+
+        return response.data;
+
+    }
+
+    async deleteDevice(deviceId: string) {
+
+        const response = await axios.delete(
+
+            `${this.TB_URL}/api/device/${deviceId}`,
+
+            {
+                headers: this.headers
+            }
+
+        );
+
+        return response.data;
+
+    }
+
 }
