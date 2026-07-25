@@ -15,140 +15,102 @@ export class ThingsBoardService {
 
     // --- Device Operations ---
 
-    async createDevice(
-        deviceName: string,
-        deviceType: string,
-        label?: string
-    ) {
-
-        // Optional authentication check
-        const user = await axios.get(
-            `${this.TB_URL}/api/auth/user`,
-            {
-                headers: this.headers
-            }
-        );
-
-        console.log("Logged in as:", user.data.email);
-
+    async createDevice(deviceName: string, deviceType: string, label?: string) {
         const response = await axios.post(
-
             `${this.TB_URL}/api/device`,
-
-            {
-                name: deviceName,
-                type: deviceType,
-                label: label ?? deviceType
-            },
-
-            {
-                headers: this.headers
-            }
-
+            { name: deviceName, type: deviceType, label: label ?? deviceType },
+            { headers: this.headers }
         );
-
         return response.data;
-
     }
 
-    async getTenantDevice(deviceName: string) {
-
+    async getDeviceByName(deviceName: string) {
         const response = await axios.get(
-
-            `${this.TB_URL}/api/tenant/device`,
-
-            {
-                headers: this.headers,
-                params: { deviceName }
-            }
-
+            `${this.TB_URL}/api/tenant/devices`,
+            { headers: this.headers, params: { deviceName } }
         );
-
         return response.data;
-
     }
 
     async deleteDevice(deviceId: string) {
-
         const response = await axios.delete(
-
             `${this.TB_URL}/api/device/${deviceId}`,
-
-            {
-                headers: this.headers
-            }
-
+            { headers: this.headers }
         );
-
         return response.data;
-
     }
 
     // --- Customer Operations ---
 
-    async createCustomer(
-        title: string,
-        email?: string,
-        phone?: string,
-        address?: string,
-        city?: string,
-        country?: string
-    ) {
-
+    async createCustomer(title: string, email?: string, phone?: string, address?: string, city?: string, country?: string) {
         const response = await axios.post(
-
             `${this.TB_URL}/api/customer`,
-
-            {
-                title,
-                email,
-                phone,
-                address,
-                city,
-                country
-            },
-
-            {
-                headers: this.headers
-            }
-
+            { title, email, phone, address, city, country },
+            { headers: this.headers }
         );
-
         return response.data;
-
     }
 
-    async getTenantCustomer(customerTitle: string) {
-
+    async getCustomerByTitle(customerTitle: string) {
         const response = await axios.get(
-
             `${this.TB_URL}/api/tenant/customers`,
-
-            {
-                headers: this.headers,
-                params: { customerTitle }
-            }
-
+            { headers: this.headers, params: { customerTitle } }
         );
-
         return response.data;
-
     }
 
     async deleteCustomer(customerId: string) {
-
         const response = await axios.delete(
-
             `${this.TB_URL}/api/customer/${customerId}`,
-
-            {
-                headers: this.headers
-            }
-
+            { headers: this.headers }
         );
-
         return response.data;
-
     }
 
+    // --- Entity Group Operations ---
+
+    async createEntityGroup(name: string, type: string) {
+        const response = await axios.post(
+            `${this.TB_URL}/api/entityGroup`,
+            { name, type },
+            { headers: this.headers }
+        );
+        return response.data;
+    }
+
+    async getEntityGroupsByType(entityType: string) {
+        // Fetch all entity groups for a specific type (e.g., 'DEVICE')
+        const response = await axios.get(
+            `${this.TB_URL}/api/entityGroups/${entityType}`,
+            { headers: this.headers }
+        );
+        return response.data; 
+    }
+
+    async deleteEntityGroup(groupId: string) {
+        const response = await axios.delete(
+            `${this.TB_URL}/api/entityGroup/${groupId}`,
+            { headers: this.headers }
+        );
+        return response.data;
+    }
+
+    async addEntitiesToGroup(groupId: string, entityIds: string[]) {
+        const response = await axios.post(
+            `${this.TB_URL}/api/entityGroup/${groupId}/addEntities`,
+            entityIds,
+            { headers: this.headers }
+        );
+        return response.data;
+    }
+
+    async removeEntitiesFromGroup(groupId: string, entityIds: string[]) {
+        // FIX: The correct ThingsBoard endpoint for removing entities ends in /deleteEntities, not /removeEntities
+        const response = await axios.post(
+            `${this.TB_URL}/api/entityGroup/${groupId}/deleteEntities`,
+            entityIds,
+            { headers: this.headers }
+        );
+        return response.data;
+    }
 }
