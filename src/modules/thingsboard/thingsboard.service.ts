@@ -33,10 +33,6 @@ async saveAlarm(alarmData: any) {
     );
     return response.data;
 }
-            { headers: this.headers }
-        );
-        return response.data;
-    }
 
 
     async deleteAlarm(alarmId: string) {
@@ -49,12 +45,33 @@ async saveAlarm(alarmData: any) {
 
     async ackAlarm(alarmId: string) {
         const response = await axios.post(
-            `${this.TB_URL}/api/alarm/${alarmId}/ack`,
+          `${this.TB_URL}/api/alarm/${alarmId}/ack`,
             {},
             { headers: this.headers }
         );
         return response.data || { status: "OK", id: alarmId };
     }
+
+
+    // ---------- ASSET METHODS ----------
+
+    async createAsset(
+        assetName: string,
+        assetType: string,
+        label?: string
+    ) {
+        const response = await axios.post(
+            `${this.TB_URL}/api/asset`,
+            {
+                name: assetName,
+                type: assetType,
+                label: label ?? assetType
+            },
+          { headers: this.headers }
+        );
+        return response.data;
+    }
+            
 
     async clearAlarm(alarmId: string) {
         const response = await axios.post(
@@ -68,6 +85,10 @@ async saveAlarm(alarmData: any) {
     async getAlarmInfoById(alarmId: string) {
         const response = await axios.get(
             `${this.TB_URL}/api/alarm/info/${alarmId}`,
+          { headers: this.headers }
+        );
+        return response.data;
+    }
 
     async getDeviceByName(deviceName: string) {
         const response = await axios.get(
@@ -190,6 +211,10 @@ async saveAlarm(alarmData: any) {
         const response = await axios.post(
             `${this.TB_URL}/api/user?sendActivationMail=${sendActivationMail}`,
             userData,
+          { headers: this.headers }
+        );
+        return response.data;
+    }
     // --- Entity Group Operations ---
 
     async createEntityGroup(name: string, type: string) {
@@ -204,6 +229,10 @@ async saveAlarm(alarmData: any) {
     async getUserById(userId: string) {
         const response = await axios.get(
             `${this.TB_URL}/api/user/${userId}`,
+          { headers: this.headers }
+        );
+        return response.data;
+    }
 
     async getEntityGroupsByType(entityType: string) {
         // Fetch all entity groups for a specific type (e.g., 'DEVICE')
@@ -238,6 +267,42 @@ async saveAlarm(alarmData: any) {
         return response.data;
     }
 
+    /**
+     * ThingsBoard's delete endpoint needs an assetId, not a name.
+     * This resolves the name -> id first.
+     */
+    async getAssetByName(assetName: string) {
+        const response = await axios.get(
+            `${this.TB_URL}/api/tenant/assets`,
+            {
+                headers: this.headers,
+                params: { assetName }
+            }
+        );
+
+        return response.data; // contains id.id
+    }
+
+    async deleteAsset(assetName: string) {
+        const asset = await this.getAssetByName(assetName);
+
+        if (!asset?.id?.id) {
+            throw new Error(`Asset "${assetName}" not found.`);
+        }
+
+        const assetId = asset.id.id;
+
+        const response = await axios.delete(
+            `${this.TB_URL}/api/asset/${assetId}`,
+            { headers: this.headers }
+        );
+
+        return {
+            deletedAssetId: assetId,
+            status: response.status
+        };
+
+
     async getActivationLink(userId: string) {
         const response = await axios.get(
             `${this.TB_URL}/api/user/${userId}/activationLink`,
@@ -247,6 +312,7 @@ async saveAlarm(alarmData: any) {
             }
         );
         return response.data; 
+
     }
 
     // --- Emulator Methods ---
