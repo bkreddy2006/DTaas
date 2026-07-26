@@ -71,7 +71,7 @@
 ## Features
 
 ### 🔄 Continuous Device Synchronization
-Register any ThingsBoard device for automatic, incremental background telemetry sync. The service respects per-device intervals, prevents overlapping executions, and isolates failures so a single bad device never blocks others.
+Register any ThingsBoard device for automatic, incremental background telemetry sync. The service respects per-device intervals, prevents overlapping executions, and isolates failures so a single bad device never blocks others. Includes a self-healing circuit breaker that automatically pauses synchronization for any device after 3 consecutive failures to prevent server log spam.
 
 ### 📊 Historical Analytics & Statistics
 Query any time range of stored telemetry directly from the Neon database — never hitting ThingsBoard again. Compute aggregate statistics (`min`, `max`, `avg`, `median`, `stdDev`, `count`) in a single database query.
@@ -155,6 +155,15 @@ DTaaS exposes **58 MCP tools** across 6 modules. Below is a summary.
 | `generate_visual_mapping` | Use Gemini AI to generate a 3D part-metric binding |
 | `preview_visual_mapping` | Preview a 3D scene using midpoint values (no live data needed) |
 | `get_device_3d_view` | Render a live 3D HTML scene for a device using real telemetry |
+
+### 🧠 Simulation Twin (4 tools)
+
+| Tool | Description |
+|---|---|
+| `generate_simulation_model` | Use Gemini AI to generate a simulation model (equations/rates/rules) |
+| `create_simulation_model` | Manually define a simulation model, bypassing Gemini API |
+| `approve_simulation_model` | Mark a model as reviewed/trusted and configure overrides |
+| `run_simulation` | Run the math integration engine and get time-series results |
 
 ### 🏗️ ThingsBoard Management (44 tools)
 
@@ -260,7 +269,18 @@ Uses AI to draft a simulation model (equations/rates/rules) from a plain-languag
   * `requirement` (string): Description of simulation behavior.
   * `domain` (string, optional): Contextual domain hint.
 
-#### 2. `run_simulation`
+#### 2. `create_simulation_model`
+Manually creates and saves a simulation model without using AI (ideal fallback for Gemini rate limits or outages).
+* **Inputs:**
+  * `domain` (string): Contextual domain (e.g. `physics`, `finance`).
+  * `mode` (string): Execution mode (`equations`, `rates`, or `rules`).
+  * `stateVars` (array): List of state variable names.
+  * `params` (object): Parameter starting/constant values mapping.
+  * `equations` (object, optional): Closed-form mathematical formulas.
+  * `rates` (object, optional): Integration rate derivative formulas.
+  * `rules` (array, optional): List of conditional actions.
+
+#### 3. `run_simulation`
 Runs a previously generated simulation model and returns the time-series result.
 * **Inputs:**
   * `modelId` (string): UUID of the model to run.
@@ -268,7 +288,7 @@ Runs a previously generated simulation model and returns the time-series result.
   * `dt` (number, default: 1): Step size.
   * `paramOverrides` (object, optional): Overrides for model params.
 
-#### 3. `approve_simulation_model`
+#### 4. `approve_simulation_model`
 Marks a simulation model as reviewed/trusted, optionally correcting its equations.
 * **Inputs:**
   * `modelId` (string): UUID of the model.
@@ -300,6 +320,7 @@ Once connected to an MCP client (e.g. Claude Desktop, NitroStack Studio):
 "Generate a 3D visual twin for device type centrifugal_pump."
 "Show me the live 3D view of pump device abc-123."
 "Draft a simulation model for a water tank heating up under constant solar radiation."
+"Manually create a simulation model for thermodynamics mode rates..."
 "Run simulation model model-uuid-123 for 50 steps."
 ```
 
