@@ -133,7 +133,7 @@ export class ThingsBoardClientService {
                     keys: keys.join(","),
                     startTs,
                     endTs,
-                    limit: 100000,
+                    limit: 50000,
                 },
             });
             return response.data || {};
