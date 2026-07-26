@@ -1,8 +1,12 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from "@nitrostack/core";
-import { Pool } from "@neondatabase/serverless";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
 import * as dotenv from "dotenv";
 
 dotenv.config();
+
+// Required for @neondatabase/serverless in Node.js environments
+neonConfig.webSocketConstructor = ws;
 
 export interface TelemetryReading {
     deviceId: string;
@@ -67,12 +71,12 @@ export class DeviceDataService implements OnModuleInit, OnModuleDestroy {
 
     /**
      * Set up database schema if tables do not exist
+     * Uses pool.query() directly (required by @neondatabase/serverless)
      */
     async ensureSchema(): Promise<void> {
         const pool = this.getPool();
-        const client = await pool.connect();
         try {
-            await client.query(`
+            await pool.query(`
                 CREATE TABLE IF NOT EXISTS device_sync_registry (
                     device_id VARCHAR(255) PRIMARY KEY,
                     enabled BOOLEAN NOT NULL DEFAULT TRUE,
@@ -85,7 +89,7 @@ export class DeviceDataService implements OnModuleInit, OnModuleDestroy {
                 );
             `);
 
-            await client.query(`
+            await pool.query(`
                 CREATE TABLE IF NOT EXISTS device_telemetry (
                     id SERIAL PRIMARY KEY,
                     device_id VARCHAR(255) NOT NULL,
@@ -96,15 +100,13 @@ export class DeviceDataService implements OnModuleInit, OnModuleDestroy {
                 );
             `);
 
-            await client.query(`
+            await pool.query(`
                 CREATE INDEX IF NOT EXISTS idx_device_telemetry_query 
                 ON device_telemetry (device_id, metric, timestamp);
             `);
         } catch (error: any) {
             console.error("❌ Failed to initialize database schema:", error.message);
             throw error;
-        } finally {
-            client.release();
         }
     }
 
