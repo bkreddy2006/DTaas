@@ -29,8 +29,8 @@ export class DeviceDataService implements OnModuleInit, OnModuleDestroy {
 
     async onModuleInit() {
         if (!this.connectionString) {
-            console.error("❌ DATABASE_URL is not set in environment variables.");
-            throw new Error("DATABASE_URL is missing.");
+            console.warn("⚠️ Warning: DATABASE_URL is not set in environment variables. Database sync features will be disabled until configured.");
+            return;
         }
 
         this.pool = new Pool({
