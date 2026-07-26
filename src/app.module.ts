@@ -7,6 +7,7 @@ import { DigitalTwinModule } from "./modules/digital-twin/digital-twin.module.js
 import { SyncModule } from "./modules/sync/sync.module.js";
 import { AnalyticsModule } from "./modules/analytics/analytics.module.js";
 import { VisualizationModule } from "./visualization/visualization.module.js";
+import { SimulationModule } from "./modules/simulation/simulation.module.js";
 import { SystemHealthCheck } from "./health/system.health.js";
 
 @Module({
@@ -14,15 +15,16 @@ import { SystemHealthCheck } from "./health/system.health.js";
     description: "DTaaS MCP Server",
 
     imports: [
-    ConfigModule.forRoot(),
-    ThingsBoardModule,
-    DashboardModule,
-    RuleChainModule,
-    DigitalTwinModule,
-    SyncModule,
-    AnalyticsModule,
-    VisualizationModule
-],
+        ConfigModule.forRoot(),
+        ThingsBoardModule,
+        DashboardModule,
+        RuleChainModule,
+        DigitalTwinModule,
+        SyncModule,
+        AnalyticsModule,
+        VisualizationModule,
+        SimulationModule
+    ],
 
     providers: [
         SystemHealthCheck

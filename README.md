@@ -236,6 +236,47 @@ register_device_for_sync(
 
 ---
 
+## Simulation Twin Capability
+
+The Simulation Twin module supports AI-assisted generation of a simulation model from a plain-language requirement, followed by safe, deterministic execution of that model.
+
+### Configuration
+
+Add `GEMINI_API_KEY` to your `.env` file:
+```bash
+GEMINI_API_KEY=your_google_gemini_api_key
+```
+
+### Model Lifecycle
+1. **Draft:** When generated via `generate_simulation_model`, models start in `draft` status.
+2. **Reviewed/Trusted:** Models requiring expert review (`requiresExpertReview: true`) must be reviewed and approved via `approve_simulation_model` before they can run.
+3. **Approved:** Approved models can be safely executed.
+
+### Tools
+
+#### 1. `generate_simulation_model`
+Uses AI to draft a simulation model (equations/rates/rules) from a plain-language requirement.
+* **Inputs:**
+  * `requirement` (string): Description of simulation behavior.
+  * `domain` (string, optional): Contextual domain hint.
+
+#### 2. `run_simulation`
+Runs a previously generated simulation model and returns the time-series result.
+* **Inputs:**
+  * `modelId` (string): UUID of the model to run.
+  * `steps` (number, default: 24): Number of steps.
+  * `dt` (number, default: 1): Step size.
+  * `paramOverrides` (object, optional): Overrides for model params.
+
+#### 3. `approve_simulation_model`
+Marks a simulation model as reviewed/trusted, optionally correcting its equations.
+* **Inputs:**
+  * `modelId` (string): UUID of the model.
+  * `reviewedBy` (string): Reviewer name.
+  * `equationOverrides` (object, optional): Formula overrides to fix model rates/equations.
+
+---
+
 ## Example Agent Prompts
 
 Once connected to an MCP client (e.g. Claude Desktop, NitroStack Studio):
@@ -254,11 +295,12 @@ Once connected to an MCP client (e.g. Claude Desktop, NitroStack Studio):
 "Generate a CSV of all sensor readings from the past month."
 ```
 
-**3D Visualization**
+**3D Visualization & Simulation**
 ```
 "Generate a 3D visual twin for device type centrifugal_pump."
 "Show me the live 3D view of pump device abc-123."
-"Preview the 3D model for a water meter."
+"Draft a simulation model for a water tank heating up under constant solar radiation."
+"Run simulation model model-uuid-123 for 50 steps."
 ```
 
 **ThingsBoard Management**
@@ -276,6 +318,7 @@ Once connected to an MCP client (e.g. Claude Desktop, NitroStack Studio):
 |---|---|
 | [Device Synchronization & Analytics](./docs/device-synchronization-analytics.md) | Full sync engine reference, registry API, analytics tools |
 | [3D Twin Visualization & Mapping](./docs/3d-twin-visualization-mapping.md) | Visual mapping schema, Three.js scene builder, AI mapping |
+| [Simulation Twin Guide](./docs/simulation-twin-guide.md) | AI-assisted simulation model generator & execution engine |
 | [Dashboard Integration](./docs/dashboard-integration.md) | Dashboard & widget management tools reference |
 
 > 📘 Full documentation website: _Coming soon_
@@ -293,6 +336,15 @@ Once connected to an MCP client (e.g. Claude Desktop, NitroStack Studio):
 | AI Mapping | [Gemini 2.5 Flash](https://deepmind.google/gemini) |
 | Language | TypeScript (ESM) |
 | Transport | HTTP Streamable + STDIO (dual mode) |
+
+---
+
+## Community
+- Discord: <https://discord.gg/uVWey6UhuD>
+- X: <https://x.com/nitrostackai>
+- YouTube: <https://www.youtube.com/@nitrostackai>
+- LinkedIn: <https://linkedin.com/company/nitrostack-ai/>
+- GitHub: <https://github.com/nitrostackai>
 
 ---
 
