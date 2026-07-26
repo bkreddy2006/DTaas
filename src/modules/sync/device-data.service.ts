@@ -49,6 +49,13 @@ export class DeviceDataService implements OnModuleInit, OnModuleDestroy {
     }
 
     /**
+     * Check if the database pool is initialized
+     */
+    hasPool(): boolean {
+        return this.pool !== null;
+    }
+
+    /**
      * Get pg Pool instance
      */
     getPool(): Pool {
