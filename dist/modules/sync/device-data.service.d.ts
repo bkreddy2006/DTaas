@@ -22,6 +22,10 @@ export declare class DeviceDataService implements OnModuleInit, OnModuleDestroy 
     onModuleInit(): Promise<void>;
     onModuleDestroy(): Promise<void>;
     /**
+     * Check if the database pool is initialized
+     */
+    hasPool(): boolean;
+    /**
      * Get pg Pool instance
      */
     getPool(): Pool;
