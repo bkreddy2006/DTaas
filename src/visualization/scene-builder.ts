@@ -129,10 +129,17 @@ export function buildDeviceScene(
             const lowerMetric = metric.toLowerCase();
             if (lowerMetric.includes("temp")) unit = " °C";
             else if (lowerMetric.includes("rpm")) unit = " RPM";
-            else if (lowerMetric.includes("pressure")) unit = " bar";
+            else if (lowerMetric.includes("pressure")) {
+                unit = val > 50 ? " hPa" : " bar";
+            }
             else if (lowerMetric.includes("flow")) unit = " GPM";
             else if (lowerMetric.includes("vibration")) unit = " mm/s";
-            else if (lowerMetric.includes("efficiency")) unit = " %";
+            else if (lowerMetric.includes("efficiency") || lowerMetric.includes("humid") || lowerMetric.includes("batter") || lowerMetric.includes("level") || lowerMetric.includes("charge")) {
+                unit = " %";
+            }
+            else if (lowerMetric.includes("volt")) unit = " V";
+            else if (lowerMetric.includes("curr")) unit = " A";
+            else if (lowerMetric.includes("power") || lowerMetric.includes("watt")) unit = " W";
             valStr = val.toFixed(1) + unit;
         }
 
