@@ -16,6 +16,10 @@ let VisualMappingService = class VisualMappingService {
         this.dataService = dataService ?? deviceDataService;
     }
     async onModuleInit() {
+        if (!this.dataService.hasPool()) {
+            console.warn("⚠️ Warning: VisualMappingService is skipping table initialization because database pool is not configured.");
+            return;
+        }
         try {
             const pool = this.dataService.getPool();
             await pool.query(`

@@ -29,6 +29,12 @@ let DeviceDataService = class DeviceDataService {
         }
     }
     /**
+     * Check if the database pool is initialized
+     */
+    hasPool() {
+        return this.pool !== null;
+    }
+    /**
      * Get pg Pool instance
      */
     getPool() {

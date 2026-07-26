@@ -24,6 +24,10 @@ let BackgroundSyncService = class BackgroundSyncService {
         this.dataService = dataService ?? deviceDataService;
     }
     async onApplicationBootstrap() {
+        if (!this.dataService.hasPool()) {
+            console.warn("⚠️ Background Telemetry Sync is disabled: DATABASE_URL is not configured.");
+            return;
+        }
         console.log("🚀 Starting Background Telemetry Synchronization Service...");
         this.start();
     }
@@ -59,6 +63,8 @@ let BackgroundSyncService = class BackgroundSyncService {
      * Continuous background sync loop for all enabled devices
      */
     async syncRegisteredDevices() {
+        if (!this.dataService.hasPool())
+            return;
         if (this.isSyncing) {
             console.log("⚠️ Background sync is already running. Skipping overlap execution.");
             return;

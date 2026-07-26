@@ -24,6 +24,10 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
     }
 
     async onApplicationBootstrap() {
+        if (!this.dataService.hasPool()) {
+            console.warn("⚠️ Background Telemetry Sync is disabled: DATABASE_URL is not configured.");
+            return;
+        }
         console.log("🚀 Starting Background Telemetry Synchronization Service...");
         this.start();
     }
@@ -62,6 +66,7 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
      * Continuous background sync loop for all enabled devices
      */
     async syncRegisteredDevices(): Promise<void> {
+        if (!this.dataService.hasPool()) return;
         if (this.isSyncing) {
             console.log("⚠️ Background sync is already running. Skipping overlap execution.");
             return;
