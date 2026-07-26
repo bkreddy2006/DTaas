@@ -133,15 +133,24 @@ describe("3D Visualization Component Tests", () => {
     });
 
     describe("buildDeviceScene", () => {
-        it("should return non-empty HTML containing a <script> tag and the correct THREE.*Geometry constructor call for each part's geometry type", () => {
+        it("should return non-empty HTML containing a <script> tag and the correct THREE.*Geometry constructor call for each part's geometry type when readings are present", () => {
             const latestReadings = { RPM: 1500, temperature: 50 };
             const propertyValues = mapTelemetryToVisualProperties(mockVisualMapping, latestReadings);
-            const html = buildDeviceScene(mockVisualMapping.shape, mockVisualMapping.mappings, propertyValues);
+            const html = buildDeviceScene(mockVisualMapping.shape, mockVisualMapping.mappings, propertyValues, latestReadings);
             
             expect(html).toContain("<html");
             expect(html).toContain("<script");
             expect(html).toContain("THREE.CylinderGeometry");
             expect(html).toContain("THREE.TorusGeometry");
+        });
+
+        it("should return placeholder HTML displaying NONE and printing no <script> tag when no readings are present", () => {
+            const html = buildDeviceScene(mockVisualMapping.shape, mockVisualMapping.mappings, {}, {});
+            
+            expect(html).toContain("<html");
+            expect(html).not.toContain("<script");
+            expect(html).toContain("NONE");
+            expect(html).toContain("OFFLINE");
         });
     });
 

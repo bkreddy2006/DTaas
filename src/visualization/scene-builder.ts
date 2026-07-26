@@ -114,32 +114,128 @@ export function buildDeviceScene(
     propertyValues: Record<string, Record<string, number | string>>,
     latestReadings?: Record<string, number>
 ): string {
-    const partGroupCode = buildDevicePartGroup(shape, mappings, propertyValues);
+    const hasRealData = latestReadings && Object.keys(latestReadings).length > 0;
 
     let metricRowsHtml = "";
     for (const map of mappings) {
         const metric = map.metric;
         const role = map.targetRole;
         const prop = map.property;
-        const val = latestReadings && latestReadings[metric] !== undefined 
-            ? latestReadings[metric] 
-            : (map.range.min + map.range.max) / 2;
-
-        let unit = "";
-        const lowerMetric = metric.toLowerCase();
-        if (lowerMetric.includes("temp")) unit = " °C";
-        else if (lowerMetric.includes("rpm")) unit = " RPM";
-        else if (lowerMetric.includes("pressure")) unit = " bar";
-        else if (lowerMetric.includes("flow")) unit = " GPM";
-        else if (lowerMetric.includes("vibration")) unit = " mm/s";
-        else if (lowerMetric.includes("efficiency")) unit = " %";
+        
+        let valStr = "NONE";
+        if (hasRealData && latestReadings[metric] !== undefined) {
+            const val = latestReadings[metric];
+            let unit = "";
+            const lowerMetric = metric.toLowerCase();
+            if (lowerMetric.includes("temp")) unit = " °C";
+            else if (lowerMetric.includes("rpm")) unit = " RPM";
+            else if (lowerMetric.includes("pressure")) unit = " bar";
+            else if (lowerMetric.includes("flow")) unit = " GPM";
+            else if (lowerMetric.includes("vibration")) unit = " mm/s";
+            else if (lowerMetric.includes("efficiency")) unit = " %";
+            valStr = val.toFixed(1) + unit;
+        }
 
         metricRowsHtml += `
       <div class="metric-row">
         <span class="metric-label">${metric} (${role}):</span>
-        <span class="metric-value">${val.toFixed(1)}${unit}</span>
+        <span class="metric-value">${valStr}</span>
       </div>`;
     }
+
+    if (!hasRealData) {
+        return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>3D Twin View - ${shape.deviceType}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #info-panel {
+      background: rgba(18, 22, 33, 0.9);
+      padding: 25px;
+      border-radius: 12px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      width: 340px;
+      text-align: center;
+    }
+    #info-panel h3 {
+      margin: 0 0 16px 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #f87171;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .metric-section {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .metric-row {
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: #a0aec0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .metric-label {
+      font-weight: 500;
+    }
+    .metric-value {
+      color: #f87171;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+    #status-badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      background: rgba(248, 113, 113, 0.15);
+      color: #f87171;
+      border: 1px solid #f87171;
+    }
+    #no-data-msg {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #a0aec0;
+    }
+  </style>
+</head>
+<body>
+  <div id="info-panel">
+    <h3>⚠️ NO DATA</h3>
+    <div class="metric-section">
+      ${metricRowsHtml}
+    </div>
+    <div id="status-badge">OFFLINE</div>
+    <div id="no-data-msg">No telemetry readings found for this device in the database.</div>
+  </div>
+</body>
+</html>`;
+    }
+
+    const partGroupCode = buildDevicePartGroup(shape, mappings, propertyValues);
 
     return `<!DOCTYPE html>
 <html>
