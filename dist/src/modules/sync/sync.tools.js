@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { ToolDecorator as Tool, Injectable, z } from "@nitrostack/core";
+import { ToolDecorator as Tool, Injectable, z, Widget } from "@nitrostack/core";
 import { syncRegistryService } from "./sync-registry.service.js";
 import { backgroundSyncService } from "./background-sync.service.js";
 let SyncTools = class SyncTools {
@@ -203,6 +203,7 @@ __decorate([
             deviceId: z.string().describe("The ThingsBoard device ID"),
         }),
     }),
+    Widget({ route: "sync-status" }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

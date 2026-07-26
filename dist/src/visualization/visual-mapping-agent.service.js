@@ -46,7 +46,7 @@ let VisualMappingAgentService = class VisualMappingAgentService {
         const userMessage = `Device Type: ${deviceType}\nTelemetry Schema Metrics:\n${JSON.stringify(metricsFormatted, null, 2)}`;
         let modelName = "gemini-2.5-flash";
         let response = await this.callGemini(modelName, apiKey, userMessage);
-        if (response.status === 404) {
+        if (response.status === 404 || response.status === 429) {
             modelName = "gemini-3.5-flash";
             response = await this.callGemini(modelName, apiKey, userMessage);
         }

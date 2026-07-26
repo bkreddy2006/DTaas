@@ -1,4 +1,4 @@
-import { ToolDecorator as Tool, ExecutionContext, Injectable, z } from "@nitrostack/core";
+import { ToolDecorator as Tool, ExecutionContext, Injectable, z, Widget } from "@nitrostack/core";
 import { SyncRegistryService, syncRegistryService } from "./sync-registry.service.js";
 import { BackgroundSyncService, backgroundSyncService } from "./background-sync.service.js";
 
@@ -117,6 +117,7 @@ export class SyncTools {
             deviceId: z.string().describe("The ThingsBoard device ID"),
         }),
     })
+    @Widget({ route: "sync-status" })
     async getDeviceSyncStatus(input: { deviceId: string }, ctx: ExecutionContext) {
         ctx.logger.info(`Fetching sync status for device: ${input.deviceId}`);
         try {

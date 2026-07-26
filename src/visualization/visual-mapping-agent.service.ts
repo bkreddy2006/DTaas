@@ -49,7 +49,7 @@ export class VisualMappingAgentService {
         let modelName = "gemini-2.5-flash";
         let response = await this.callGemini(modelName, apiKey, userMessage);
 
-        if (response.status === 404) {
+        if (response.status === 404 || response.status === 429) {
             modelName = "gemini-3.5-flash";
             response = await this.callGemini(modelName, apiKey, userMessage);
         }

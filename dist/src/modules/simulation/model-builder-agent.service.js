@@ -52,8 +52,8 @@ let ModelBuilderAgentService = class ModelBuilderAgentService {
         }
         let modelName = "gemini-2.5-flash";
         let response = await this.callGemini(modelName, apiKey, requirement, domain);
-        // Fallback if the model is no longer available/supported (e.g. returns 404)
-        if (response.status === 404) {
+        // Fallback if the model is no longer available/supported (404) or quota is exhausted (429)
+        if (response.status === 404 || response.status === 429) {
             modelName = "gemini-3.5-flash";
             response = await this.callGemini(modelName, apiKey, requirement, domain);
         }
