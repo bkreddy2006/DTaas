@@ -111,10 +111,6 @@ into one intelligent platform that dramatically reduces Digital Twin development
 
 # Solution Architecture
 
-<p align="center">
-  <img src="./docs/images/solution-architecture.png" alt="Solution Architecture" width="100%">
-</p>
-
 The DTaaS platform consists of four major layers.
 
 ### Requirement Layer
@@ -174,11 +170,7 @@ The generated Digital Twin is deployed onto the DTaaS platform which provides:
 ---
 
 
-# AI Digital Twin Generation Flow
-
-<p align="center">
-  <img src="./docs/images/digital-twin-flow.png" width="360">
-</p>
+# Future direction
 
 DTaaS follows an AI-driven engineering workflow that automates the complete Digital Twin lifecycle.
 
