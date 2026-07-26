@@ -1,24 +1,18 @@
 import { ExecutionContext } from "@nitrostack/core";
 export declare class DigitalTwinTools {
+    getSmartHomePrompt(args: Record<string, any>, ctx: ExecutionContext): Promise<{
+        role: "user";
+        content: string;
+    }[]>;
+    getSmartFactoryPrompt(args: Record<string, any>, ctx: ExecutionContext): Promise<{
+        role: "user";
+        content: string;
+    }[]>;
     createDigitalTwin(input: {
         prompt: string;
     }, ctx: ExecutionContext): Promise<{
         success: boolean;
         specification: {
-            twinName: string;
-            twinType: string;
-            devices: {
-                type: string;
-                count: number;
-                namePrefix?: string | undefined;
-                label?: string | undefined;
-            }[];
-            dashboards: {
-                name: string;
-            }[];
-            ruleChains: {
-                name: string;
-            }[];
             alarms: {
                 type: string;
                 severity: "CRITICAL" | "MAJOR" | "MINOR" | "WARNING" | "INDETERMINATE";
@@ -29,6 +23,20 @@ export declare class DigitalTwinTools {
                 authority: "TENANT_ADMIN" | "CUSTOMER_USER";
                 firstName?: string | undefined;
                 lastName?: string | undefined;
+            }[];
+            dashboards: {
+                name: string;
+            }[];
+            twinName: string;
+            twinType: string;
+            devices: {
+                type: string;
+                count: number;
+                label?: string | undefined;
+                namePrefix?: string | undefined;
+            }[];
+            ruleChains: {
+                name: string;
             }[];
             customers: {
                 title: string;

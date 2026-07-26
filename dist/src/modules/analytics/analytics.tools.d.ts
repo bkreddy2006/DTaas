@@ -24,7 +24,7 @@ export declare class AnalyticsTools {
         endTs: number;
     }, ctx: ExecutionContext): Promise<{
         success: boolean;
-        stats: import("./telemetry-analytics.service.js").TelemetryStats | Record<string, never>;
+        stats: Record<string, never> | import("./telemetry-analytics.service.js").TelemetryStats;
         error?: undefined;
     } | {
         success: boolean;

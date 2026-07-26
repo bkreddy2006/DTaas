@@ -3,6 +3,86 @@ import { PromptDecorator as Prompt, ExecutionContext } from "@nitrostack/core";
 export class DigitalTwinPrompts {
 
     @Prompt({
+        name: "smart_home",
+        description: "Creates a complete Smart Home digital twin with smart devices, dashboards, users, automation rule chains, and alarms.",
+        arguments: []
+    })
+    async getSmartHomePrompt(
+        args: Record<string, never>,
+        ctx: ExecutionContext
+    ) {
+        return [
+            {
+                role: "user" as const,
+                content: `Create a digital twin named "Smart Home".
+
+Create the following devices:
+- 2 Smart Lights
+- 1 Smart Plug
+- 1 CCTV Camera
+- 1 Smart Meter
+
+Create three dashboards:
+- Home Overview
+- Energy Monitoring
+- Security Dashboard
+
+Create one customer named "HomeOwner".
+
+Create two users under this customer:
+- homeadmin@example.com (Tenant Administrator)
+- resident@example.com (Customer User)
+
+Create a rule chain named "Home Automation".
+
+Create two alarms:
+- High Energy Usage (CRITICAL)
+- Camera Offline (MAJOR)`
+            }
+        ];
+    }
+
+    @Prompt({
+        name: "smart_factory",
+        description: "Creates a complete Smart Factory digital twin with industrial devices, production dashboards, monitoring rule chains, and factory alarms.",
+        arguments: []
+    })
+    async getSmartFactoryPrompt(
+        args: Record<string, never>,
+        ctx: ExecutionContext
+    ) {
+        return [
+            {
+                role: "user" as const,
+                content: `Create a digital twin named "Smart Factory".
+
+Create the following devices:
+- 2 Temperature Sensors
+- 1 Conveyor Motor
+- 1 PLC Controller
+- 1 Power Meter
+
+Create three dashboards:
+- Factory Overview
+- Production Dashboard
+- Machine Health
+
+Create one customer named "Factory Operations".
+
+Create two users:
+- manager@factory.com (Tenant Administrator)
+- operator@factory.com (Customer User)
+
+Create a rule chain named "Factory Monitoring".
+
+Create two alarms:
+- Machine Overheating (CRITICAL)
+- Power Failure (MAJOR)`
+            }
+        ];
+    }
+
+    @Prompt({
         name: "smart_hospital",
         description: "Creates a complete Smart Hospital digital twin with ICU devices, patient monitoring dashboards, hospital staff users, monitoring rule chains, and clinical alarms.",
         arguments: []

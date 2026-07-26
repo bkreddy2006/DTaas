@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Module } from "@nitrostack/core";
 import { DigitalTwinTools } from "./digital-twin.tools.js";
+import { DigitalTwinPrompts } from "./digital-twin.prompts.js";
 let DigitalTwinModule = class DigitalTwinModule {
 };
 DigitalTwinModule = __decorate([
@@ -13,7 +14,8 @@ DigitalTwinModule = __decorate([
         name: "digital-twin",
         description: "AI powered Digital Twin creation",
         controllers: [
-            DigitalTwinTools
+            DigitalTwinTools,
+            DigitalTwinPrompts
         ]
     })
 ], DigitalTwinModule);

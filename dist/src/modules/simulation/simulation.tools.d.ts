@@ -1,6 +1,7 @@
 import { ExecutionContext } from "@nitrostack/core";
 import { ModelStoreService } from "./model-store.service.js";
 import { ModelBuilderAgentService } from "./model-builder-agent.service.js";
+import { DeclarativeModel } from "./types.js";
 export declare class SimulationTools {
     private readonly modelStore;
     private readonly modelBuilderAgent;
@@ -32,6 +33,29 @@ export declare class SimulationTools {
     } | {
         success: boolean;
         message: any;
+    }>;
+    createSimulationModel(input: {
+        domain: string;
+        mode: "equations" | "rates" | "rules";
+        stateVars: string[];
+        params: Record<string, number>;
+        equations?: Record<string, string>;
+        rates?: Record<string, string>;
+        rules?: Array<{
+            condition: string;
+            effect: string;
+        }>;
+        assumptions?: string[];
+    }, ctx: ExecutionContext): Promise<{
+        success: boolean;
+        message: string;
+        modelId: string;
+        model: DeclarativeModel;
+    } | {
+        success: boolean;
+        message: any;
+        modelId?: undefined;
+        model?: undefined;
     }>;
     runSimulationTool(input: {
         modelId: string;
