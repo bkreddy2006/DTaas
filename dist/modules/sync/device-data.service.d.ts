@@ -31,6 +31,7 @@ export declare class DeviceDataService implements OnModuleInit, OnModuleDestroy 
     getPool(): Pool;
     /**
      * Set up database schema if tables do not exist
+     * Uses pool.query() directly (required by @neondatabase/serverless)
      */
     ensureSchema(): Promise<void>;
     /**
