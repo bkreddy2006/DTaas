@@ -18,16 +18,39 @@ export class GeminiService {
 
     async generate(prompt: string): Promise<string> {
 
-        const response = await this.ai.models.generateContent({
+    const models = [
 
-            model: "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
 
-            contents: prompt
+        "gemini-2.0-flash"
 
-        });
+    ];
 
-        return response.text ?? "";
+    for (const model of models) {
+
+        try {
+
+            const response =
+                await this.ai.models.generateContent({
+
+                    model,
+
+                    contents: prompt
+
+                });
+
+            return response.text ?? "";
+
+        } catch (err) {
+
+            console.log(`${model} failed`);
+
+        }
 
     }
+
+    throw new Error("All Gemini models failed.");
+
+}
 
 }

@@ -3,9 +3,12 @@
 export type NodeType =
     | "device"
     | "dashboard"
+    | "widget"
     | "ruleChain"
     | "alarm"
-    | "user";
+    | "user"
+    | "customer"
+    | "emulator";
 
 export interface TwinGraphNode {
     id: string;
@@ -22,7 +25,9 @@ export interface TwinGraphEdge {
         | "uses"
         | "monitors"
         | "owns"
-        | "connected_to";
+        | "assigned_to"
+        | "connected_to"
+        | "emulates";
 }
 
 export interface TwinGraph {

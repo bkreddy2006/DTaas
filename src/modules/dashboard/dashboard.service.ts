@@ -259,17 +259,56 @@ export class DashboardService {
     ) {
 
         // 1. Fetch the device's telemetry keys from ThingsBoard
-        const keysRes = await axios.get(
-            `${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/keys/timeseries`,
-            { headers: headers() }
-        );
-        const telemetryKeys: string[] = keysRes.data;
+        let keysRes = await axios.get(
+    `${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/keys/timeseries`,
+    { headers: headers() }
+);
 
-        if (telemetryKeys.length === 0) {
-            throw new Error(
-                `Device ${deviceId} has no telemetry data yet. Send some data from the device first.`
-            );
-        }
+let telemetryKeys: string[] = keysRes.data;
+
+if (telemetryKeys.length === 0) {
+
+    const randomTelemetry = {
+
+        temperature:
+            Math.floor(Math.random() * 15) + 20,
+
+        humidity:
+            Math.floor(Math.random() * 40) + 40,
+
+        battery:
+            Math.floor(Math.random() * 40) + 60,
+
+        pressure:
+            Math.floor(Math.random() * 30) + 980
+
+    };
+
+    await axios.post(
+
+        `${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/timeseries/ANY`,
+
+        randomTelemetry,
+
+        { headers: headers() }
+
+    );
+
+    await new Promise(resolve =>
+        setTimeout(resolve, 1000)
+    );
+
+    keysRes = await axios.get(
+
+        `${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/keys/timeseries`,
+
+        { headers: headers() }
+
+    );
+
+    telemetryKeys = keysRes.data;
+
+}
 
         // 2. Pick the best widget type based on key names + count
         const kind = pickWidgetKind(telemetryKeys);

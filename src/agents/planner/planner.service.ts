@@ -3,6 +3,7 @@
 import { GeminiService } from "./gemini.service.js";
 import { SYSTEM_PROMPT } from "./planner.prompt.js";
 import { TwinSpecification } from "./planner.schema.js";
+import { TwinSpecificationSchema } from "./planner.schema.js";
 
 export class PlannerService {
 
@@ -27,7 +28,9 @@ ${userPrompt}
             .replace(/```/g, "")
             .trim();
 
-        return JSON.parse(cleaned);
+        return TwinSpecificationSchema.parse(
+            JSON.parse(cleaned)
+        );
 
     }
 
