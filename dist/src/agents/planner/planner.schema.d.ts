@@ -7,13 +7,13 @@ export declare const DeviceSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     type: string;
     count: number;
-    namePrefix?: string | undefined;
     label?: string | undefined;
+    namePrefix?: string | undefined;
 }, {
     type: string;
     count: number;
-    namePrefix?: string | undefined;
     label?: string | undefined;
+    namePrefix?: string | undefined;
 }>;
 export declare const DashboardSchema: z.ZodObject<{
     name: z.ZodString;
@@ -107,13 +107,13 @@ export declare const TwinSpecificationSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         type: string;
         count: number;
-        namePrefix?: string | undefined;
         label?: string | undefined;
+        namePrefix?: string | undefined;
     }, {
         type: string;
         count: number;
-        namePrefix?: string | undefined;
         label?: string | undefined;
+        namePrefix?: string | undefined;
     }>, "many">>;
     dashboards: z.ZodDefault<z.ZodArray<z.ZodObject<{
         name: z.ZodString;
@@ -197,20 +197,6 @@ export declare const TwinSpecificationSchema: z.ZodObject<{
         telemetryRateSeconds?: number | undefined;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    twinName: string;
-    twinType: string;
-    devices: {
-        type: string;
-        count: number;
-        namePrefix?: string | undefined;
-        label?: string | undefined;
-    }[];
-    dashboards: {
-        name: string;
-    }[];
-    ruleChains: {
-        name: string;
-    }[];
     alarms: {
         type: string;
         severity: "CRITICAL" | "MAJOR" | "MINOR" | "WARNING" | "INDETERMINATE";
@@ -221,6 +207,20 @@ export declare const TwinSpecificationSchema: z.ZodObject<{
         authority: "TENANT_ADMIN" | "CUSTOMER_USER";
         firstName?: string | undefined;
         lastName?: string | undefined;
+    }[];
+    dashboards: {
+        name: string;
+    }[];
+    twinName: string;
+    twinType: string;
+    devices: {
+        type: string;
+        count: number;
+        label?: string | undefined;
+        namePrefix?: string | undefined;
+    }[];
+    ruleChains: {
+        name: string;
     }[];
     customers: {
         title: string;
@@ -239,18 +239,6 @@ export declare const TwinSpecificationSchema: z.ZodObject<{
 }, {
     twinName: string;
     twinType: string;
-    devices?: {
-        type: string;
-        count: number;
-        namePrefix?: string | undefined;
-        label?: string | undefined;
-    }[] | undefined;
-    dashboards?: {
-        name: string;
-    }[] | undefined;
-    ruleChains?: {
-        name: string;
-    }[] | undefined;
     alarms?: {
         type: string;
         severity: "CRITICAL" | "MAJOR" | "MINOR" | "WARNING" | "INDETERMINATE";
@@ -261,6 +249,18 @@ export declare const TwinSpecificationSchema: z.ZodObject<{
         authority: "TENANT_ADMIN" | "CUSTOMER_USER";
         firstName?: string | undefined;
         lastName?: string | undefined;
+    }[] | undefined;
+    dashboards?: {
+        name: string;
+    }[] | undefined;
+    devices?: {
+        type: string;
+        count: number;
+        label?: string | undefined;
+        namePrefix?: string | undefined;
+    }[] | undefined;
+    ruleChains?: {
+        name: string;
     }[] | undefined;
     customers?: {
         title: string;
