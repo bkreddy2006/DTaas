@@ -21,7 +21,6 @@ document
             })
 
         });
-
     const data =
         await res.json();
 
