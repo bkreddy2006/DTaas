@@ -6,6 +6,7 @@ export declare class BackgroundSyncService implements OnApplicationBootstrap, On
     private schedulerInterval;
     private isRunning;
     private isSyncing;
+    private readonly consecutiveFailures;
     private readonly registryService;
     private readonly tbClient;
     private readonly dataService;

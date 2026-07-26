@@ -8,6 +8,7 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
     private schedulerInterval: NodeJS.Timeout | null = null;
     private isRunning = false;
     private isSyncing = false; // Lock to prevent overlapping scheduler executions
+    private readonly consecutiveFailures = new Map<string, number>(); // Track consecutive failures per device
 
     private readonly registryService: SyncRegistryService;
     private readonly tbClient: ThingsBoardClientService;
@@ -86,8 +87,26 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
                     try {
                         console.log(`Syncing device ${device.deviceId} incrementally...`);
                         await this.syncDeviceIncremental(device.deviceId, lastSynced, now);
+                        
+                        // Reset failure counter on success
+                        this.consecutiveFailures.delete(device.deviceId);
                     } catch (deviceError: any) {
-                        console.error(`❌ Failed to sync telemetry for device ${device.deviceId}:`, deviceError.message);
+                        const failures = (this.consecutiveFailures.get(device.deviceId) || 0) + 1;
+                        this.consecutiveFailures.set(device.deviceId, failures);
+
+                        console.error(`❌ Failed to sync telemetry for device ${device.deviceId} (Attempt ${failures}/3):`, deviceError.message);
+                        
+                        // Auto-disable if the device fails 3 times consecutively (circuit breaker pattern)
+                        if (failures >= 3) {
+                            console.warn(`⚠️ Auto-disabling sync for device ${device.deviceId} due to 3 consecutive failures: ${deviceError.message}`);
+                            try {
+                                await this.registryService.pauseDevice(device.deviceId);
+                            } catch (pauseError: any) {
+                                console.error(`Failed to auto-pause sync for device ${device.deviceId}:`, pauseError.message);
+                            }
+                            this.consecutiveFailures.delete(device.deviceId);
+                        }
+
                         // Update sync registry with error status
                         await this.registryService.updateLastSync(
                             device.deviceId,

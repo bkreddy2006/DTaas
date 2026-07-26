@@ -15,6 +15,7 @@ let BackgroundSyncService = class BackgroundSyncService {
     schedulerInterval = null;
     isRunning = false;
     isSyncing = false; // Lock to prevent overlapping scheduler executions
+    consecutiveFailures = new Map(); // Track consecutive failures per device
     registryService;
     tbClient;
     dataService;
@@ -81,9 +82,24 @@ let BackgroundSyncService = class BackgroundSyncService {
                     try {
                         console.log(`Syncing device ${device.deviceId} incrementally...`);
                         await this.syncDeviceIncremental(device.deviceId, lastSynced, now);
+                        // Reset failure counter on success
+                        this.consecutiveFailures.delete(device.deviceId);
                     }
                     catch (deviceError) {
-                        console.error(`❌ Failed to sync telemetry for device ${device.deviceId}:`, deviceError.message);
+                        const failures = (this.consecutiveFailures.get(device.deviceId) || 0) + 1;
+                        this.consecutiveFailures.set(device.deviceId, failures);
+                        console.error(`❌ Failed to sync telemetry for device ${device.deviceId} (Attempt ${failures}/3):`, deviceError.message);
+                        // Auto-disable if the device fails 3 times consecutively (circuit breaker pattern)
+                        if (failures >= 3) {
+                            console.warn(`⚠️ Auto-disabling sync for device ${device.deviceId} due to 3 consecutive failures: ${deviceError.message}`);
+                            try {
+                                await this.registryService.pauseDevice(device.deviceId);
+                            }
+                            catch (pauseError) {
+                                console.error(`Failed to auto-pause sync for device ${device.deviceId}:`, pauseError.message);
+                            }
+                            this.consecutiveFailures.delete(device.deviceId);
+                        }
                         // Update sync registry with error status
                         await this.registryService.updateLastSync(device.deviceId, lastSynced, // don't update timestamp on failure
                         "error", deviceError.message);
