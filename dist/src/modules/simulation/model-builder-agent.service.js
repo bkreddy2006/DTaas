@@ -50,11 +50,11 @@ let ModelBuilderAgentService = class ModelBuilderAgentService {
         if (!apiKey) {
             throw new Error("GEMINI_API_KEY environment variable is not defined.");
         }
-        let modelName = "gemini-1.5-flash";
+        let modelName = "gemini-2.5-flash";
         let response = await this.callGemini(modelName, apiKey, requirement, domain);
         // Fallback if the model is no longer available/supported (e.g. returns 404)
         if (response.status === 404) {
-            modelName = "gemini-2.0-flash";
+            modelName = "gemini-3.5-flash";
             response = await this.callGemini(modelName, apiKey, requirement, domain);
         }
         if (!response.ok) {
