@@ -27,7 +27,7 @@
   <a href="#tools-reference">Tools Reference</a> •
   <a href="#quick-start">Quick Start</a> •
   <a href="#configuration">Configuration</a> •
-  <a href="#documentation">Documentation</a>
+  <a href="https://blackflash-docs.vercel.app/">Documentation</a>
 </p>
 
 ---
