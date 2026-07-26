@@ -5,9 +5,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Injectable } from "@nitrostack/core";
-import { Pool } from "@neondatabase/serverless";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
 import * as dotenv from "dotenv";
 dotenv.config();
+// Required for @neondatabase/serverless in Node.js environments
+neonConfig.webSocketConstructor = ws;
 let DeviceDataService = class DeviceDataService {
     pool = null;
     connectionString = process.env.DATABASE_URL;
@@ -45,12 +48,12 @@ let DeviceDataService = class DeviceDataService {
     }
     /**
      * Set up database schema if tables do not exist
+     * Uses pool.query() directly (required by @neondatabase/serverless)
      */
     async ensureSchema() {
         const pool = this.getPool();
-        const client = await pool.connect();
         try {
-            await client.query(`
+            await pool.query(`
                 CREATE TABLE IF NOT EXISTS device_sync_registry (
                     device_id VARCHAR(255) PRIMARY KEY,
                     enabled BOOLEAN NOT NULL DEFAULT TRUE,
@@ -62,7 +65,7 @@ let DeviceDataService = class DeviceDataService {
                     last_sync_error TEXT
                 );
             `);
-            await client.query(`
+            await pool.query(`
                 CREATE TABLE IF NOT EXISTS device_telemetry (
                     id SERIAL PRIMARY KEY,
                     device_id VARCHAR(255) NOT NULL,
@@ -72,7 +75,7 @@ let DeviceDataService = class DeviceDataService {
                     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
                 );
             `);
-            await client.query(`
+            await pool.query(`
                 CREATE INDEX IF NOT EXISTS idx_device_telemetry_query 
                 ON device_telemetry (device_id, metric, timestamp);
             `);
@@ -80,9 +83,6 @@ let DeviceDataService = class DeviceDataService {
         catch (error) {
             console.error("❌ Failed to initialize database schema:", error.message);
             throw error;
-        }
-        finally {
-            client.release();
         }
     }
     /**

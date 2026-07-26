@@ -6,11 +6,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Injectable } from "@nitrostack/core";
 import { Pool, neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
+import { createRequire } from "module";
 import * as dotenv from "dotenv";
 dotenv.config();
 // Required for @neondatabase/serverless in Node.js environments
-neonConfig.webSocketConstructor = ws;
+// createRequire avoids needing @types/ws type declarations
+const _require = createRequire(import.meta.url);
+neonConfig.webSocketConstructor = _require("ws");
 let DeviceDataService = class DeviceDataService {
     pool = null;
     connectionString = process.env.DATABASE_URL;
