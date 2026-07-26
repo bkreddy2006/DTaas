@@ -9,7 +9,7 @@ export class GeminiService {
     }
     async generate(prompt) {
         const models = [
-            "gemini-2.5-flash-lite",
+            "gemini-1.5-flash",
             "gemini-2.0-flash"
         ];
         for (const model of models) {

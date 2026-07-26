@@ -14,6 +14,7 @@ describe("Sync Services Tests", () => {
         readingsStore = [];
         // Mock DeviceDataService
         mockDataService = {
+            hasPool: vi.fn(() => true),
             getRegistryEntry: vi.fn(async (deviceId) => {
                 return registryStore.get(deviceId) || null;
             }),

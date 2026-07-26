@@ -20,6 +20,7 @@ describe("Sync Services Tests", () => {
 
         // Mock DeviceDataService
         mockDataService = {
+            hasPool: vi.fn(() => true),
             getRegistryEntry: vi.fn(async (deviceId: string) => {
                 return registryStore.get(deviceId) || null;
             }),
