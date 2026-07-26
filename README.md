@@ -2,6 +2,9 @@
   <br />
   DTaaS
   <br />
+  <p align="center">
+    <img src="./docs/images/dtaas-banner.png" width="100%">
+  </p>
 </h1>
 
 <h4 align="center">Device-Twin-as-a-Service — MCP Server for IoT Telemetry, Analytics & 3D Digital Twins</h4>
@@ -31,7 +34,6 @@
 </p>
 
 ---
-
 ## Overview
 
 **DTaaS** is a production-ready [NitroStack](https://nitrostack.ai) MCP server that bridges your IoT infrastructure with AI agents. It continuously synchronizes device telemetry from [ThingsBoard](https://thingsboard.io) into a [Neon PostgreSQL](https://neon.tech) database, exposes rich historical analytics and ML dataset generation, and can render interactive **3D Digital Twin visualizations** of any device using its live telemetry data.
@@ -65,6 +67,155 @@
     NitroStack MCP Server
     (58 tools · HTTP + STDIO)
 ```
+
+---
+
+# Problem Statement
+
+Industrial organizations generate enormous amounts of IoT telemetry, but transforming this data into useful Digital Twins remains difficult and fragmented.
+
+Current Digital Twin platforms suffer from several limitations:
+
+- Multiple disconnected platforms for telemetry, analytics, visualization, and simulation.
+- Manual Digital Twin creation requiring domain experts.
+- No standardized AI-assisted engineering workflow.
+- Historical telemetry is difficult to reuse for analytics and machine learning.
+- Simulation models require significant engineering effort.
+- Existing platforms lack lifecycle management, version control, validation, and automated deployment.
+
+These limitations increase engineering effort, slow deployment, reduce scalability, and make Digital Twin technology difficult to adopt across industries.
+
+---
+
+# Our Solution
+
+DTaaS (Digital Twin as a Service) is an AI-powered Digital Twin platform built on the **Model Context Protocol (MCP)**.
+
+Instead of manually engineering Digital Twins, users simply describe their requirements in natural language. AI Planner and Twin Engineer Agents automatically generate complete Digital Twins, simulation models, telemetry schemas, dashboards, and deployment configurations.
+
+DTaaS unifies:
+
+- ThingsBoard IoT
+- Neon PostgreSQL
+- AI Planning Agents
+- Digital Twin Engineering
+- Simulation Twins
+- Historical Analytics
+- ML Dataset Generation
+- Interactive 3D Visualization
+- MCP Tools
+
+into one intelligent platform that dramatically reduces Digital Twin development time while making Digital Twin technology accessible through AI.
+
+---
+
+# Solution Architecture
+
+<p align="center">
+  <img src="./docs/images/solution-architecture.png" alt="Solution Architecture" width="100%">
+</p>
+
+The DTaaS platform consists of four major layers.
+
+### Requirement Layer
+
+Users define their requirements through:
+
+- Natural language prompts
+- Industry-specific templates
+
+Example requests:
+
+- Create a centrifugal pump Digital Twin
+- Build a predictive maintenance model
+- Simulate water tank heating
+- Generate a Digital Twin for an HVAC system
+
+---
+
+### AI Engineering Layer
+
+The AI layer transforms user requirements into deployable Digital Twins.
+
+#### Planner Agent
+
+Responsible for:
+
+- Understanding business requirements
+- Selecting Digital Twin templates
+- Planning engineering tasks
+- Defining implementation strategy
+
+#### Twin Engineer Agent
+
+Responsible for:
+
+- Telemetry schema generation
+- Asset relationships
+- Simulation model creation
+- Dashboard generation
+- Monitoring rules
+- Deployment configuration
+
+---
+
+### Digital Twin Platform
+
+The generated Digital Twin is deployed onto the DTaaS platform which provides:
+
+- Continuous ThingsBoard synchronization
+- Neon PostgreSQL telemetry storage
+- Historical analytics
+- ML dataset generation
+- Simulation engine
+- Interactive 3D Digital Twin visualization
+- MCP tool interface
+
+---
+
+
+# AI Digital Twin Generation Flow
+
+<p align="center">
+  <img src="./docs/images/digital-twin-flow.png" width="360">
+</p>
+
+DTaaS follows an AI-driven engineering workflow that automates the complete Digital Twin lifecycle.
+
+### Workflow
+
+1. **User Requirement**
+   - Users describe their Digital Twin using natural language or predefined templates.
+
+2. **Planner Agent**
+   - Converts business requirements into a structured engineering plan.
+
+3. **Twin Engineer Agent**
+   - Generates telemetry schemas, Digital Twin models, asset relationships, dashboards, and simulation logic.
+
+4. **Twin Graph Library**
+   - Reuses existing engineering templates, Digital Twin components, and best practices.
+
+5. **Project Digital Twin**
+   - A complete Digital Twin is automatically assembled.
+
+6. **Engineering Validation**
+   - Engineers review and validate AI-generated Digital Twins before deployment.
+
+7. **Optimization & AI Recommendations**
+   - AI continuously improves simulation quality, telemetry mappings, and Digital Twin performance.
+
+8. **User Approval / Modification**
+   - Users review, modify, or approve the generated Digital Twin.
+
+9. **Version Control**
+   - Every Digital Twin revision is stored with complete version history for traceability.
+
+10. **Deployment**
+    - Approved Digital Twins are automatically deployed using deployment adapters.
+
+11. **Live Digital Twin**
+    - The deployed Digital Twin continuously synchronizes telemetry, executes simulations, monitors assets, and delivers intelligent insights in real time.
 
 ---
 
