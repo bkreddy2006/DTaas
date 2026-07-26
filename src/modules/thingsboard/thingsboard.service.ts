@@ -334,6 +334,9 @@ async saveAlarm(alarmData: any) {
     /**
      * Provisions an emulator device entity in ThingsBoard
      */
+    /**
+     * Provisions an emulator device entity in ThingsBoard
+     */
     async createEmulatorDevice(
         deviceName: string, 
         emulatorType: string = "smart-home-energy-hub", 

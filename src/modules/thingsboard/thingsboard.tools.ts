@@ -1,6 +1,8 @@
 import { ToolDecorator as Tool, ExecutionContext, z } from "@nitrostack/core";
 import { ThingsBoardService } from "./thingsboard.service.js";
+import { DashboardService } from "../dashboard/dashboard.service.js";
 
+const dashboardService = new DashboardService();
 const service = new ThingsBoardService();
 
 export class ThingsBoardTools {
@@ -444,42 +446,64 @@ export class ThingsBoardTools {
     }
 
     @Tool({
-        name: "create_emulator",
-        description: "Provisions and starts a virtual IoT emulator device based on the emulator catalog.",
-        inputSchema: z.object({
-            deviceName: z.string().describe("Custom name for the virtual emulator device (e.g., 'smart-home-energy-hub-002')"),
-            emulatorType: z.string().default("smart-home-energy-hub").describe("The emulator catalog type string (e.g., 'smart-home-energy-hub')"),
-            scenario: z.string().default("Typical Day").describe("Initial behavior scenario (e.g., 'Typical Day', 'Grid Blackout', 'High Peak Demand')"),
-            telemetryRateSeconds: z.number().default(5).describe("Telemetry streaming interval in seconds")
-        })
+    name: "create_emulator",
+    description: "Creates an emulator device and automatically provisions a dashboard.",
+    inputSchema: z.object({
+        deviceName: z.string(),
+        emulatorType: z.string().default("smart-home-energy-hub"),
+        scenario: z.string().default("Typical Day"),
+        telemetryRateSeconds: z.number().default(5)
     })
-    async createEmulator(
-        input: { 
-            deviceName: string; 
-            emulatorType?: string; 
-            scenario?: string; 
-            telemetryRateSeconds?: number; 
-        },
-        ctx: ExecutionContext
-    ) {
-        ctx.logger.info(`Provisioning emulator '${input.deviceName}'`);
-        try {
-            const result = await service.createEmulatorDevice(
-                input.deviceName,
-                input.emulatorType ?? "smart-home-energy-hub",
-                input.scenario ?? "Typical Day",
-                input.telemetryRateSeconds ?? 5
-            );
+})
+async createEmulator(
+    input: {
+        deviceName: string;
+        emulatorType?: string;
+        scenario?: string;
+        telemetryRateSeconds?: number;
+    },
+    ctx: ExecutionContext
+) {
+    try {
 
-            return {
-                success: true,
-                 message: `Virtual emulator '${input.deviceName}' created successfully.`,
-                emulator: result
-            };
-        } catch (e: any) {
-            return { success: false, message: e.response?.data ?? e.message };
-        }
+        // Create emulator device
+        const emulator = await service.createEmulatorDevice(
+            input.deviceName,
+            input.emulatorType ?? "smart-home-energy-hub",
+            input.scenario ?? "Typical Day",
+            input.telemetryRateSeconds ?? 5
+        );
+
+        const deviceId = emulator.device.id.id;
+
+        // Create dashboard
+        const dashboard = await dashboardService.createDashboard(
+            `${input.deviceName} Dashboard`
+        );
+
+        // Add widget
+        const widget = await dashboardService.addSmartWidget(
+            dashboard.id.id,
+            deviceId,
+            input.deviceName
+        );
+
+        return {
+            success: true,
+            emulator,
+            dashboard,
+            widget
+        };
+
+    } catch (e: any) {
+
+        return {
+            success: false,
+            status: e.response?.status,
+            message: e.response?.data ?? e.message
+        };
     }
+}
     // ---------- ASSET TOOLS ----------
 
     @Tool({
@@ -546,17 +570,6 @@ export class ThingsBoardTools {
         }
     }
     // --- Device Tools ---
-
-    @Tool({
-        name: "create_device",
-        description: "Create any device in ThingsBoard Cloud",
-        inputSchema: z.object({
-            deviceName: z.string().describe("Name of the device"),
-            deviceType: z.string().describe("Device type (Smart Light, Smart Plug, Smart Meter, CCTV, etc.)"),
-            label: z.string().optional().describe("Optional label")
-        })
-    })
-
     @Tool({
         name: "delete_device",
         description: "Delete an existing device by its name from ThingsBoard Cloud",

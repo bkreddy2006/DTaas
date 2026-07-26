@@ -3,7 +3,7 @@ import { McpApp, Module, ConfigModule } from "@nitrostack/core";
 import { ThingsBoardModule } from "./modules/thingsboard/thingsboard.module.js";
 import { DashboardModule } from "./modules/dashboard/dashboard.module.js";
 import { RuleChainModule } from "./modules/rule-chain/rule-chain.module.js";
-
+import { DigitalTwinModule } from "./modules/digital-twin/digital-twin.module.js";
 import { SystemHealthCheck } from "./health/system.health.js";
 
 @Module({
@@ -11,11 +11,12 @@ import { SystemHealthCheck } from "./health/system.health.js";
     description: "DTaaS MCP Server",
 
     imports: [
-        ConfigModule.forRoot(),
-        ThingsBoardModule,
-        DashboardModule,
-        RuleChainModule
-    ],
+    ConfigModule.forRoot(),
+    ThingsBoardModule,
+    DashboardModule,
+    RuleChainModule,
+    DigitalTwinModule
+],
 
     providers: [
         SystemHealthCheck

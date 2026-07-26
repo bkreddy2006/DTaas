@@ -24,4 +24,4 @@ import { DashboardService } from "./dashboard.service.js";
 })
 
 export class DashboardModule { }
-
+
