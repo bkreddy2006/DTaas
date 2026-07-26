@@ -7,6 +7,7 @@ import { ModelStoreService } from "./model-store.service.js";
 import { ModelBuilderAgentService } from "./model-builder-agent.service.js";
 import { validateModel } from "./validate.js";
 import { runSimulation } from "./engine.js";
+import { DeclarativeModel } from "./types.js";
 
 export class SimulationTools {
     private readonly modelStore: ModelStoreService;
@@ -34,7 +35,7 @@ export class SimulationTools {
     ) {
         ctx.logger.info(`Generating simulation model for requirement: "${input.requirement}"`);
         try {
-            const model = await this.modelBuilderAgent.generateModel(input.requirement, input.domain);
+            const model: DeclarativeModel = await this.modelBuilderAgent.generateModel(input.requirement, input.domain);
             validateModel(model);
             model.status = "draft";
             const modelId = this.modelStore.save(model);
@@ -42,6 +43,70 @@ export class SimulationTools {
                 success: true,
                 modelId,
                 ...model
+            };
+        } catch (e: any) {
+            return {
+                success: false,
+                message: e.message
+            };
+        }
+    }
+
+    @Tool({
+        name: "create_simulation_model",
+        description: "Manually creates and saves a simulation model without using AI. Bypasses Gemini rate limits/outages.",
+        inputSchema: z.object({
+            domain: z.string().describe("Contextual domain (e.g., 'physics', 'finance')"),
+            mode: z.enum(["equations", "rates", "rules"]).describe("Execution mode: 'equations' (direct closed-form), 'rates' (differential integration), or 'rules' (conditional actions)"),
+            stateVars: z.array(z.string()).describe("List of state variable names"),
+            params: z.record(z.number()).describe("Map of parameter names and initial state values to their numeric values"),
+            equations: z.record(z.string()).optional().describe("Map of state variable equations (required for 'equations' mode)"),
+            rates: z.record(z.string()).optional().describe("Map of state variable rate equations (required for 'rates' mode)"),
+            rules: z.array(z.object({
+                condition: z.string().describe("Ternary or boolean expression condition"),
+                effect: z.string().describe("Variable assignment effect")
+            })).optional().describe("Array of conditional rules (required for 'rules' mode)"),
+            assumptions: z.array(z.string()).optional().describe("Optional list of model assumptions")
+        })
+    })
+    async createSimulationModel(
+        input: {
+            domain: string;
+            mode: "equations" | "rates" | "rules";
+            stateVars: string[];
+            params: Record<string, number>;
+            equations?: Record<string, string>;
+            rates?: Record<string, string>;
+            rules?: Array<{ condition: string; effect: string }>;
+            assumptions?: string[];
+        },
+        ctx: ExecutionContext
+    ) {
+        ctx.logger.info(`Manually creating simulation model for domain ${input.domain}`);
+        try {
+            const model: DeclarativeModel = {
+                id: Math.random().toString(36).substring(2, 15) + "_" + Date.now(),
+                domain: input.domain,
+                mode: input.mode,
+                stateVars: input.stateVars,
+                params: input.params,
+                equations: input.equations,
+                rates: input.rates,
+                rules: input.rules,
+                knownFormulaReference: "manual_creation",
+                assumptions: input.assumptions ?? [],
+                confidence: "high",
+                requiresExpertReview: false,
+                status: "trusted"
+            };
+
+            validateModel(model);
+            const modelId = this.modelStore.save(model);
+            return {
+                success: true,
+                message: "Simulation model created and saved successfully (marked as trusted).",
+                modelId,
+                model
             };
         } catch (e: any) {
             return {
