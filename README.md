@@ -3,7 +3,7 @@
   DTaaS
   <br />
   <p align="center">
-    <img src="./docs/images/dtaas-banner.png" width="100%">
+    <img src="./docs/dtaas-banner.png" width="100%">
   </p>
 </h1>
 
