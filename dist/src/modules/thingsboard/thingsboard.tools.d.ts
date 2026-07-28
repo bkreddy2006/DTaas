@@ -332,19 +332,22 @@ export declare class ThingsBoardTools {
         status: string;
         message: any;
     }>;
-    configureThingsBoard(input: {
-        tbUrl: string;
-        tbApiKey: string;
+    configureCredentials(input: {
+        tbUrl?: string;
+        tbApiKey?: string;
+        geminiApiKey?: string;
     }, ctx: ExecutionContext): Promise<{
         success: boolean;
         message: string;
     }>;
     checkThingsBoardStatus(input: {}, ctx: ExecutionContext): Promise<{
-        configured: boolean;
+        thingsboardConfigured: boolean;
+        geminiConfigured: boolean;
         tbUrl: string | null;
         message: string;
     } | {
-        configured: boolean;
+        thingsboardConfigured: boolean;
+        geminiConfigured: boolean;
         message: any;
         tbUrl?: undefined;
     }>;

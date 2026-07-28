@@ -2,6 +2,7 @@
 
 import { Injectable } from "@nitrostack/core";
 import { TelemetrySchema, VisualMapping } from "./types.js";
+import { ThingsBoardConfig } from "../modules/thingsboard/tb-config.js";
 
 const SYSTEM_PROMPT = `You are a 3D visualization designer for a digital twin platform. Given a device type and its telemetry schema, design a CompositeShape made of 3-6 simple geometric parts that reasonably represents this real-world device, then map telemetry metrics onto specific parts' visual properties.
 
@@ -33,9 +34,9 @@ RULES:
 @Injectable()
 export class VisualMappingAgentService {
     async generateVisualMapping(deviceType: string, telemetrySchema: TelemetrySchema): Promise<VisualMapping> {
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = ThingsBoardConfig.getGeminiApiKey();
         if (!apiKey) {
-            throw new Error("GEMINI_API_KEY environment variable is not defined.");
+            throw new Error("Gemini API key is not configured. Please use the 'configure_credentials' tool first to configure your Gemini API Key before creating or building anything.");
         }
 
         const metricsFormatted = telemetrySchema.metrics.map(m => ({

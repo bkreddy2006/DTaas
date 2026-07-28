@@ -1,5 +1,6 @@
 import { Injectable } from "@nitrostack/core";
 import { DeclarativeModel } from "./types.js";
+import { ThingsBoardConfig } from "../thingsboard/tb-config.js";
 
 const MODEL_BUILDER_SYSTEM_PROMPT = `You are a simulation model designer for a digital twin platform. Your job is to translate a plain-language simulation requirement into a STRUCTURED DATA specification — never executable code, never a function, never a script.
 
@@ -44,7 +45,7 @@ RULES YOU MUST FOLLOW:
 @Injectable()
 export class ModelBuilderAgentService {
     async generateModel(requirement: string, domain?: string): Promise<DeclarativeModel> {
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = ThingsBoardConfig.getGeminiApiKey();
         if (!apiKey) {
             console.warn("⚠️ GEMINI_API_KEY environment variable is not defined. Using static model template fallback.");
             return this.getStaticModelFallback(requirement, domain);

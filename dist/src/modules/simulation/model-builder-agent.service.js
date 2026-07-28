@@ -5,6 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Injectable } from "@nitrostack/core";
+import { ThingsBoardConfig } from "../thingsboard/tb-config.js";
 const MODEL_BUILDER_SYSTEM_PROMPT = `You are a simulation model designer for a digital twin platform. Your job is to translate a plain-language simulation requirement into a STRUCTURED DATA specification — never executable code, never a function, never a script.
 
 Output ONLY a single JSON object matching this exact schema. No prose, no markdown code fences, no explanation outside the JSON.
@@ -46,7 +47,7 @@ RULES YOU MUST FOLLOW:
 8. For every state variable listed in "stateVars", you MUST define a reasonable default initial value inside the "params" object (for example, if "stateVars" has "R", include a starting value like "R": 100 in "params").`;
 let ModelBuilderAgentService = class ModelBuilderAgentService {
     async generateModel(requirement, domain) {
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = ThingsBoardConfig.getGeminiApiKey();
         if (!apiKey) {
             console.warn("⚠️ GEMINI_API_KEY environment variable is not defined. Using static model template fallback.");
             return this.getStaticModelFallback(requirement, domain);

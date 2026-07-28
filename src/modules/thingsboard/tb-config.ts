@@ -4,6 +4,7 @@ import * as path from "path";
 export interface TBConfig {
     tbUrl?: string;
     tbApiKey?: string;
+    geminiApiKey?: string;
 }
 
 export class ThingsBoardConfig {
@@ -26,12 +27,20 @@ export class ThingsBoardConfig {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
-        fs.writeFileSync(this.configPath, JSON.stringify(config, null, 2), "utf8");
+        // Preserve any existing fields if we do partial updates
+        const existing = this.get();
+        const merged = { ...existing, ...config };
+        fs.writeFileSync(this.configPath, JSON.stringify(merged, null, 2), "utf8");
     }
 
     static hasConfig(): boolean {
         const config = this.get();
         return !!(config.tbUrl && config.tbApiKey);
+    }
+
+    static hasGeminiConfig(): boolean {
+        const config = this.get();
+        return !!(config.geminiApiKey || process.env.GEMINI_API_KEY);
     }
 
     static getUrl(): string {
@@ -42,5 +51,10 @@ export class ThingsBoardConfig {
     static getApiKey(): string {
         const config = this.get();
         return config.tbApiKey || process.env.TB_API_KEY || "";
+    }
+
+    static getGeminiApiKey(): string {
+        const config = this.get();
+        return config.geminiApiKey || process.env.GEMINI_API_KEY || "";
     }
 }

@@ -1,20 +1,20 @@
 // src/agents/planner/gemini.service.ts
 import { GoogleGenAI } from "@google/genai";
+import { ThingsBoardConfig } from "../../modules/thingsboard/tb-config.js";
 export class GeminiService {
-    ai;
-    constructor() {
-        this.ai = new GoogleGenAI({
-            apiKey: process.env.GEMINI_API_KEY
-        });
-    }
     async generate(prompt) {
+        const apiKey = ThingsBoardConfig.getGeminiApiKey();
+        if (!apiKey) {
+            throw new Error("Gemini API key is not configured. Please use the 'configure_credentials' tool first to configure your Gemini API Key before creating or building anything.");
+        }
+        const ai = new GoogleGenAI({ apiKey });
         const models = [
             "gemini-2.5-flash",
             "gemini-3.5-flash"
         ];
         for (const model of models) {
             try {
-                const response = await this.ai.models.generateContent({
+                const response = await ai.models.generateContent({
                     model,
                     contents: prompt
                 });

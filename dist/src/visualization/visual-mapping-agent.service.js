@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Injectable } from "@nitrostack/core";
+import { ThingsBoardConfig } from "../modules/thingsboard/tb-config.js";
 const SYSTEM_PROMPT = `You are a 3D visualization designer for a digital twin platform. Given a device type and its telemetry schema, design a CompositeShape made of 3-6 simple geometric parts that reasonably represents this real-world device, then map telemetry metrics onto specific parts' visual properties.
 
 Output ONLY a JSON object matching this schema — no prose, no markdown fences:
@@ -34,9 +35,9 @@ RULES:
 6. Colors must be valid 6-digit hex strings (e.g. "#4a90d9").`;
 let VisualMappingAgentService = class VisualMappingAgentService {
     async generateVisualMapping(deviceType, telemetrySchema) {
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = ThingsBoardConfig.getGeminiApiKey();
         if (!apiKey) {
-            throw new Error("GEMINI_API_KEY environment variable is not defined.");
+            throw new Error("Gemini API key is not configured. Please use the 'configure_credentials' tool first to configure your Gemini API Key before creating or building anything.");
         }
         const metricsFormatted = telemetrySchema.metrics.map(m => ({
             name: m.name,

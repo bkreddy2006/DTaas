@@ -778,21 +778,26 @@ async createEmulator(
     }
 
     @Tool({
-        name: "configure_thingsboard",
-        description: "Configure your custom ThingsBoard connection URL and API Key dynamically.",
+        name: "configure_credentials",
+        description: "Configure your custom ThingsBoard connection URL, ThingsBoard API Key, and Google Gemini API Key dynamically.",
         inputSchema: z.object({
-            tbUrl: z.string().describe("The URL of the ThingsBoard server (e.g. 'https://thingsboard.cloud' or a local/private host)"),
-            tbApiKey: z.string().describe("Your ThingsBoard API Authorization Key")
+            tbUrl: z.string().optional().describe("Optional ThingsBoard URL (e.g. 'https://thingsboard.cloud' or local host)"),
+            tbApiKey: z.string().optional().describe("Optional ThingsBoard API Key / Device Access Token"),
+            geminiApiKey: z.string().optional().describe("Optional Google Gemini API Key")
         })
     })
-    async configureThingsBoard(input: { tbUrl: string; tbApiKey: string; }, ctx: ExecutionContext) {
-        ctx.logger.info(`Configuring ThingsBoard URL: ${input.tbUrl}`);
+    async configureCredentials(input: { tbUrl?: string; tbApiKey?: string; geminiApiKey?: string; }, ctx: ExecutionContext) {
+        ctx.logger.info("Configuring user connection credentials dynamically");
         try {
             ThingsBoardConfig.save({
                 tbUrl: input.tbUrl,
-                tbApiKey: input.tbApiKey
+                tbApiKey: input.tbApiKey,
+                geminiApiKey: input.geminiApiKey
             });
-            return { success: true, message: "ThingsBoard credentials successfully configured. You can now use all ThingsBoard and digital twin tools." };
+            return { 
+                success: true, 
+                message: "Credentials successfully updated. You can now check status using 'check_thingsboard_status' or create digital twins." 
+            };
         } catch (e: any) {
             return { success: false, message: `Failed to save configuration: ${e.message}` };
         }
@@ -800,22 +805,22 @@ async createEmulator(
 
     @Tool({
         name: "check_thingsboard_status",
-        description: "Check if the ThingsBoard connection is currently configured and valid. Returns whether a custom config is set.",
+        description: "Check if the ThingsBoard connection and Gemini API are currently configured.",
         inputSchema: z.object({})
     })
     async checkThingsBoardStatus(input: {}, ctx: ExecutionContext) {
-        ctx.logger.info("Checking ThingsBoard configuration status");
+        ctx.logger.info("Checking ThingsBoard and Gemini configuration status");
         try {
-            const hasConfig = ThingsBoardConfig.hasConfig();
+            const hasTb = ThingsBoardConfig.hasConfig();
+            const hasGemini = ThingsBoardConfig.hasGeminiConfig();
             return {
-                configured: hasConfig,
-                tbUrl: hasConfig ? ThingsBoardConfig.getUrl() : null,
-                message: hasConfig 
-                    ? "ThingsBoard is configured." 
-                    : "ThingsBoard connection is not configured. Please use 'configure_thingsboard' tool to set your URL and API key."
+                thingsboardConfigured: hasTb,
+                geminiConfigured: hasGemini,
+                tbUrl: hasTb ? ThingsBoardConfig.getUrl() : null,
+                message: `ThingsBoard: ${hasTb ? "Configured" : "NOT Configured"}. Gemini: ${hasGemini ? "Configured" : "NOT Configured"}.`
             };
         } catch (e: any) {
-            return { configured: false, message: e.message };
+            return { thingsboardConfigured: false, geminiConfigured: false, message: e.message };
         }
     }
 }

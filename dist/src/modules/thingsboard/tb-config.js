@@ -19,11 +19,18 @@ export class ThingsBoardConfig {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
-        fs.writeFileSync(this.configPath, JSON.stringify(config, null, 2), "utf8");
+        // Preserve any existing fields if we do partial updates
+        const existing = this.get();
+        const merged = { ...existing, ...config };
+        fs.writeFileSync(this.configPath, JSON.stringify(merged, null, 2), "utf8");
     }
     static hasConfig() {
         const config = this.get();
         return !!(config.tbUrl && config.tbApiKey);
+    }
+    static hasGeminiConfig() {
+        const config = this.get();
+        return !!(config.geminiApiKey || process.env.GEMINI_API_KEY);
     }
     static getUrl() {
         const config = this.get();
@@ -32,6 +39,10 @@ export class ThingsBoardConfig {
     static getApiKey() {
         const config = this.get();
         return config.tbApiKey || process.env.TB_API_KEY || "";
+    }
+    static getGeminiApiKey() {
+        const config = this.get();
+        return config.geminiApiKey || process.env.GEMINI_API_KEY || "";
     }
 }
 //# sourceMappingURL=tb-config.js.map
