@@ -46,17 +46,34 @@ export class VisualMappingAgentService {
 
         const userMessage = `Device Type: ${deviceType}\nTelemetry Schema Metrics:\n${JSON.stringify(metricsFormatted, null, 2)}`;
 
-        let modelName = "gemini-2.5-flash";
-        let response = await this.callGemini(modelName, apiKey, userMessage);
+        const models = [
+            "gemini-3.6-flash",
+            "gemini-2.0-flash", 
+            "gemini-flash-latest",
+            "gemini-3.5-flash", 
+            "gemini-3.5-flash-lite"
+        ];
+        let response: Response | null = null;
+        let lastErrorText = "";
+        let modelName = "";
 
-        if (response.status === 404 || response.status === 429) {
-            modelName = "gemini-3.5-flash";
-            response = await this.callGemini(modelName, apiKey, userMessage);
+        for (const model of models) {
+            modelName = model;
+            try {
+                response = await this.callGemini(modelName, apiKey, userMessage);
+                if (response.ok) {
+                    break;
+                }
+                lastErrorText = await response.text().catch(() => "Unknown error");
+                console.warn(`Gemini model ${modelName} returned status ${response.status}: ${lastErrorText}`);
+            } catch (err: any) {
+                lastErrorText = err.message;
+                console.warn(`Failed to call Gemini model ${modelName}: ${err.message}`);
+            }
         }
 
-        if (!response.ok) {
-            const errorText = await response.text().catch(() => "Unknown error");
-            throw new Error(`Gemini API returned status ${response.status} for model ${modelName}: ${errorText}`);
+        if (!response || !response.ok) {
+            throw new Error(`All Gemini models failed. Last attempted ${modelName}: ${lastErrorText}`);
         }
 
         const data = await response.json() as any;

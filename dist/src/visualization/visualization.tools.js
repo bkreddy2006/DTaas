@@ -16,6 +16,7 @@ import { validateVisualMapping } from "./validate.js";
 import { mapTelemetryToVisualProperties } from "./telemetry-mapper.js";
 import { buildDeviceScene } from "./scene-builder.js";
 import { DeviceDataService, deviceDataService } from "../modules/sync/device-data.service.js";
+import { thingsboardClientService } from "../modules/sync/thingsboard-client.service.js";
 let VisualizationTools = class VisualizationTools {
     mappingService;
     schemaService;
@@ -30,9 +31,64 @@ let VisualizationTools = class VisualizationTools {
     async generateVisualMapping(input, ctx) {
         ctx.logger.info(`Generating visual mapping for device type: ${input.deviceType}`);
         try {
-            const schema = await this.schemaService.getSchema(input.deviceType);
+            let schema = await this.schemaService.getSchema(input.deviceType);
             if (!schema) {
-                throw new Error(`Telemetry schema for device type '${input.deviceType}' not found. Please register it first.`);
+                ctx.logger.info(`Schema not found in database for '${input.deviceType}'. Attempting to dynamically fetch from ThingsBoard...`);
+                let device = null;
+                try {
+                    device = await thingsboardClientService.getDeviceByName(input.deviceType);
+                }
+                catch (e) {
+                    ctx.logger.warn(`Could not find device by exact name '${input.deviceType}' in ThingsBoard: ${e.message}`);
+                }
+                // If not found by exact name, try casing variations
+                if (!device) {
+                    const variations = [
+                        input.deviceType.charAt(0).toUpperCase() + input.deviceType.slice(1), // Capitalize first letter
+                        input.deviceType.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" "), // Title case
+                        input.deviceType.toLowerCase(),
+                        input.deviceType.toUpperCase()
+                    ];
+                    for (const variation of variations) {
+                        if (variation !== input.deviceType) {
+                            try {
+                                device = await thingsboardClientService.getDeviceByName(variation);
+                                if (device) {
+                                    ctx.logger.info(`Found device using variation name: '${variation}'`);
+                                    break;
+                                }
+                            }
+                            catch (err) { }
+                        }
+                    }
+                }
+                if (!device) {
+                    throw new Error(`Telemetry schema or ThingsBoard device for '${input.deviceType}' not found. Please register it first.`);
+                }
+                const deviceId = device.id?.id;
+                if (!deviceId) {
+                    throw new Error(`Invalid device response from ThingsBoard for '${input.deviceType}'.`);
+                }
+                const keys = await thingsboardClientService.getTelemetryKeys(deviceId);
+                if (!keys || keys.length === 0) {
+                    throw new Error(`Device '${input.deviceType}' was found, but it has no telemetry keys in ThingsBoard to construct a schema.`);
+                }
+                schema = {
+                    deviceType: input.deviceType,
+                    metrics: keys.map(key => ({
+                        name: key,
+                        unit: "",
+                        expectedRange: { min: 0, max: 100 }
+                    }))
+                };
+                // Cache/save schema to database if possible
+                try {
+                    await this.schemaService.saveSchema(schema);
+                    ctx.logger.info(`Dynamically created and cached telemetry schema for '${input.deviceType}' with keys: ${keys.join(", ")}`);
+                }
+                catch (saveErr) {
+                    ctx.logger.warn(`Failed to save dynamic schema to database: ${saveErr.message}. Proceeding in-memory.`);
+                }
             }
             const mapping = await this.agentService.generateVisualMapping(input.deviceType, schema);
             validateVisualMapping(mapping, schema);

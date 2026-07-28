@@ -139,6 +139,19 @@ export class ThingsBoardClientService {
             return response.data || {};
         });
     }
+
+    /**
+     * Search for a device by name in ThingsBoard
+     */
+    async getDeviceByName(deviceName: string): Promise<any> {
+        return this.executeWithRetry(async (headers) => {
+            const response = await this.client.get(`/api/tenant/devices`, {
+                headers,
+                params: { deviceName }
+            });
+            return response.data;
+        });
+    }
 }
 
 export const thingsboardClientService = new ThingsBoardClientService();

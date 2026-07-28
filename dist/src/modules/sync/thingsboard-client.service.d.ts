@@ -33,6 +33,10 @@ export declare class ThingsBoardClientService {
         ts: number;
         value: any;
     }>>>;
+    /**
+     * Search for a device by name in ThingsBoard
+     */
+    getDeviceByName(deviceName: string): Promise<any>;
 }
 export declare const thingsboardClientService: ThingsBoardClientService;
 //# sourceMappingURL=thingsboard-client.service.d.ts.map
