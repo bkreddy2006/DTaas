@@ -1,13 +1,23 @@
 import axios from "axios";
 import * as dotenv from "dotenv";
+import { ThingsBoardConfig } from "./tb-config.js";
 dotenv.config();
 export class ThingsBoardService {
-    TB_URL = process.env.TB_URL;
-    API_KEY = process.env.TB_API_KEY;
-    headers = {
-        "Content-Type": "application/json",
-        "X-Authorization": `ApiKey ${this.API_KEY}`
-    };
+    get TB_URL() {
+        if (!ThingsBoardConfig.hasConfig()) {
+            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        }
+        return ThingsBoardConfig.getUrl();
+    }
+    get headers() {
+        if (!ThingsBoardConfig.hasConfig()) {
+            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        }
+        return {
+            "Content-Type": "application/json",
+            "X-Authorization": `ApiKey ${ThingsBoardConfig.getApiKey()}`
+        };
+    }
     // --- Device Operations ---
     async createDevice(deviceName, deviceType, label) {
         const response = await axios.post(`${this.TB_URL}/api/device`, { name: deviceName, type: deviceType, label: label ?? deviceType }, { headers: this.headers });

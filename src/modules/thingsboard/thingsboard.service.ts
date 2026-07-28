@@ -1,16 +1,26 @@
 import axios from "axios";
 import * as dotenv from "dotenv";
+import { ThingsBoardConfig } from "./tb-config.js";
 
 dotenv.config();
 
 export class ThingsBoardService {
-    private readonly TB_URL = process.env.TB_URL!;
-    private readonly API_KEY = process.env.TB_API_KEY!;
+    private get TB_URL(): string {
+        if (!ThingsBoardConfig.hasConfig()) {
+            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        }
+        return ThingsBoardConfig.getUrl();
+    }
 
-    private readonly headers = {
-        "Content-Type": "application/json",
-        "X-Authorization": `ApiKey ${this.API_KEY}`
-    };
+    private get headers() {
+        if (!ThingsBoardConfig.hasConfig()) {
+            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        }
+        return {
+            "Content-Type": "application/json",
+            "X-Authorization": `ApiKey ${ThingsBoardConfig.getApiKey()}`
+        };
+    }
 
 // --- Device Operations ---
 

@@ -1,13 +1,26 @@
 import axios, { AxiosInstance } from "axios";
 import { Injectable } from "@nitrostack/core";
 import * as dotenv from "dotenv";
+import { ThingsBoardConfig } from "../thingsboard/tb-config.js";
 
 dotenv.config();
 
 @Injectable()
 export class ThingsBoardClientService {
-    private readonly TB_URL = process.env.TB_URL || "https://thingsboard.cloud";
-    private readonly API_KEY = process.env.TB_API_KEY;
+    private get TB_URL(): string {
+        if (!ThingsBoardConfig.hasConfig()) {
+            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        }
+        return ThingsBoardConfig.getUrl();
+    }
+
+    private get API_KEY(): string | undefined {
+        if (!ThingsBoardConfig.hasConfig()) {
+            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        }
+        return ThingsBoardConfig.getApiKey() || undefined;
+    }
+
     private readonly USERNAME = process.env.TB_USERNAME;
     private readonly PASSWORD = process.env.TB_PASSWORD;
 
@@ -16,10 +29,15 @@ export class ThingsBoardClientService {
 
     constructor() {
         this.client = axios.create({
-            baseURL: this.TB_URL,
             headers: {
                 "Content-Type": "application/json",
             },
+        });
+
+        // Intercept requests to dynamically set baseURL from config
+        this.client.interceptors.request.use((config) => {
+            config.baseURL = this.TB_URL;
+            return config;
         });
     }
 

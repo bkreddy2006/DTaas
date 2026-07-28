@@ -7,13 +7,26 @@ dotenv.config();
 
 // ─── Auth headers ────────────────────────────────────────────────────────────
 
-const TB_URL  = process.env.TB_URL!;
-const API_KEY = process.env.TB_API_KEY!;
+import { ThingsBoardConfig } from "../thingsboard/tb-config.js";
 
-const headers = () => ({
-    "Content-Type": "application/json",
-    "X-Authorization": `ApiKey ${API_KEY}`
-});
+const TB_URL = {
+    toString() {
+        if (!ThingsBoardConfig.hasConfig()) {
+            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        }
+        return ThingsBoardConfig.getUrl();
+    }
+};
+
+const headers = () => {
+    if (!ThingsBoardConfig.hasConfig()) {
+        throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+    }
+    return {
+        "Content-Type": "application/json",
+        "X-Authorization": `ApiKey ${ThingsBoardConfig.getApiKey()}`
+    };
+};
 
 // ─── Widget type map ──────────────────────────────────────────────────────────
 //  Maps a friendly name to the real ThingsBoard bundleAlias + typeAlias.

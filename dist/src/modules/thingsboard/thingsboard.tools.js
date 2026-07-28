@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { ToolDecorator as Tool, z } from "@nitrostack/core";
 import { ThingsBoardService } from "./thingsboard.service.js";
 import { DashboardService } from "../dashboard/dashboard.service.js";
+import { ThingsBoardConfig } from "./tb-config.js";
 const dashboardService = new DashboardService();
 const service = new ThingsBoardService();
 export class ThingsBoardTools {
@@ -467,6 +468,35 @@ export class ThingsBoardTools {
             return { status: "ERROR", message: e.response?.data?.message ?? e.response?.data ?? e.message };
         }
     }
+    async configureThingsBoard(input, ctx) {
+        ctx.logger.info(`Configuring ThingsBoard URL: ${input.tbUrl}`);
+        try {
+            ThingsBoardConfig.save({
+                tbUrl: input.tbUrl,
+                tbApiKey: input.tbApiKey
+            });
+            return { success: true, message: "ThingsBoard credentials successfully configured. You can now use all ThingsBoard and digital twin tools." };
+        }
+        catch (e) {
+            return { success: false, message: `Failed to save configuration: ${e.message}` };
+        }
+    }
+    async checkThingsBoardStatus(input, ctx) {
+        ctx.logger.info("Checking ThingsBoard configuration status");
+        try {
+            const hasConfig = ThingsBoardConfig.hasConfig();
+            return {
+                configured: hasConfig,
+                tbUrl: hasConfig ? ThingsBoardConfig.getUrl() : null,
+                message: hasConfig
+                    ? "ThingsBoard is configured."
+                    : "ThingsBoard connection is not configured. Please use 'configure_thingsboard' tool to set your URL and API key."
+            };
+        }
+        catch (e) {
+            return { configured: false, message: e.message };
+        }
+    }
 }
 __decorate([
     Tool({
@@ -828,4 +858,27 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ThingsBoardTools.prototype, "removeEntitiesFromGroup", null);
+__decorate([
+    Tool({
+        name: "configure_thingsboard",
+        description: "Configure your custom ThingsBoard connection URL and API Key dynamically.",
+        inputSchema: z.object({
+            tbUrl: z.string().describe("The URL of the ThingsBoard server (e.g. 'https://thingsboard.cloud' or a local/private host)"),
+            tbApiKey: z.string().describe("Your ThingsBoard API Authorization Key")
+        })
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ThingsBoardTools.prototype, "configureThingsBoard", null);
+__decorate([
+    Tool({
+        name: "check_thingsboard_status",
+        description: "Check if the ThingsBoard connection is currently configured and valid. Returns whether a custom config is set.",
+        inputSchema: z.object({})
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ThingsBoardTools.prototype, "checkThingsBoardStatus", null);
 //# sourceMappingURL=thingsboard.tools.js.map

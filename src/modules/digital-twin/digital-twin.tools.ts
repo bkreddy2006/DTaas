@@ -7,6 +7,7 @@ import {
 
 import { PlannerService } from "../../agents/planner/planner.service.js";
 import { EngineerService } from "../../agents/engineer/engineer.service.js";
+import { ThingsBoardConfig } from "../thingsboard/tb-config.js";
 
 export class DigitalTwinTools {
 
@@ -106,6 +107,13 @@ Create two alarms:
         },
         ctx: ExecutionContext
     ) {
+
+        if (!ThingsBoardConfig.hasConfig()) {
+            return {
+                success: false,
+                message: "Error: ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything."
+            };
+        }
 
         ctx.logger.info("Planning digital twin...");
 

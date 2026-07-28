@@ -1,6 +1,6 @@
 export declare class ThingsBoardClientService {
-    private readonly TB_URL;
-    private readonly API_KEY;
+    private get TB_URL();
+    private get API_KEY();
     private readonly USERNAME;
     private readonly PASSWORD;
     private jwtToken;

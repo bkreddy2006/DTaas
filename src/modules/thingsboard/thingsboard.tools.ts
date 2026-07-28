@@ -1,6 +1,7 @@
 import { ToolDecorator as Tool, ExecutionContext, z } from "@nitrostack/core";
 import { ThingsBoardService } from "./thingsboard.service.js";
 import { DashboardService } from "../dashboard/dashboard.service.js";
+import { ThingsBoardConfig } from "./tb-config.js";
 
 const dashboardService = new DashboardService();
 const service = new ThingsBoardService();
@@ -773,6 +774,48 @@ async createEmulator(
             return { status: "OK", message: `Successfully removed ${entityIds.length} entities from group '${input.groupName}'.` };
         } catch (e: any) {
             return { status: "ERROR", message: e.response?.data?.message ?? e.response?.data ?? e.message };
+        }
+    }
+
+    @Tool({
+        name: "configure_thingsboard",
+        description: "Configure your custom ThingsBoard connection URL and API Key dynamically.",
+        inputSchema: z.object({
+            tbUrl: z.string().describe("The URL of the ThingsBoard server (e.g. 'https://thingsboard.cloud' or a local/private host)"),
+            tbApiKey: z.string().describe("Your ThingsBoard API Authorization Key")
+        })
+    })
+    async configureThingsBoard(input: { tbUrl: string; tbApiKey: string; }, ctx: ExecutionContext) {
+        ctx.logger.info(`Configuring ThingsBoard URL: ${input.tbUrl}`);
+        try {
+            ThingsBoardConfig.save({
+                tbUrl: input.tbUrl,
+                tbApiKey: input.tbApiKey
+            });
+            return { success: true, message: "ThingsBoard credentials successfully configured. You can now use all ThingsBoard and digital twin tools." };
+        } catch (e: any) {
+            return { success: false, message: `Failed to save configuration: ${e.message}` };
+        }
+    }
+
+    @Tool({
+        name: "check_thingsboard_status",
+        description: "Check if the ThingsBoard connection is currently configured and valid. Returns whether a custom config is set.",
+        inputSchema: z.object({})
+    })
+    async checkThingsBoardStatus(input: {}, ctx: ExecutionContext) {
+        ctx.logger.info("Checking ThingsBoard configuration status");
+        try {
+            const hasConfig = ThingsBoardConfig.hasConfig();
+            return {
+                configured: hasConfig,
+                tbUrl: hasConfig ? ThingsBoardConfig.getUrl() : null,
+                message: hasConfig 
+                    ? "ThingsBoard is configured." 
+                    : "ThingsBoard connection is not configured. Please use 'configure_thingsboard' tool to set your URL and API key."
+            };
+        } catch (e: any) {
+            return { configured: false, message: e.message };
         }
     }
 }

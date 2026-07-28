@@ -1,7 +1,6 @@
 export declare class ThingsBoardService {
-    private readonly TB_URL;
-    private readonly API_KEY;
-    private readonly headers;
+    private get TB_URL();
+    private get headers();
     createDevice(deviceName: string, deviceType: string, label?: string): Promise<any>;
     saveAlarm(alarmData: any): Promise<any>;
     deleteAlarm(alarmId: string): Promise<any>;

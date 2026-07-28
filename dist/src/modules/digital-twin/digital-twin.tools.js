@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { ToolDecorator as Tool, PromptDecorator as Prompt, z } from "@nitrostack/core";
 import { PlannerService } from "../../agents/planner/planner.service.js";
 import { EngineerService } from "../../agents/engineer/engineer.service.js";
+import { ThingsBoardConfig } from "../thingsboard/tb-config.js";
 export class DigitalTwinTools {
     async getSmartHomePrompt(args, ctx) {
         ctx.logger.info("Executing smart_home prompt template");
@@ -76,6 +77,12 @@ Create two alarms:
         ];
     }
     async createDigitalTwin(input, ctx) {
+        if (!ThingsBoardConfig.hasConfig()) {
+            return {
+                success: false,
+                message: "Error: ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything."
+            };
+        }
         ctx.logger.info("Planning digital twin...");
         try {
             const planner = new PlannerService();
