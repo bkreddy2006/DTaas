@@ -19,8 +19,8 @@ User Request:
 ${userPrompt}
 `;
 
-        console.log("========== GEMINI PLANNER ==========");
-        console.log(prompt);
+        console.error("========== GEMINI PLANNER ==========");
+        console.error(prompt);
 
         const response = await this.gemini.generate(prompt);
         const cleaned = response

@@ -42,7 +42,7 @@ export class DashboardTools {
     async addWidgetToDashboard(input, ctx) {
         ctx.logger.info(`Adding widget to dashboard "${input.dashboard ?? "(most recent)"}" for device ${input.deviceId}`);
         try {
-            const result = await service.addSmartWidget(input.dashboard, input.deviceId, input.widgetTitle);
+            const result = await service.addSmartWidget(input.dashboard, input.deviceId, input.widgetTitle, input.telemetryKeys);
             return {
                 success: true,
                 message: `Widget "${result.title}" added successfully (type: ${result.widgetKind}) with ID: ${result.widgetId}.`,
@@ -172,7 +172,8 @@ The server automatically:
         inputSchema: z.object({
             dashboard: z.string().optional().describe("UUID or name of the target dashboard. If not specified, the server auto-selects the most recently updated dashboard."),
             deviceId: z.string().describe("UUID of the device to visualise"),
-            widgetTitle: z.string().optional().describe("Optional widget title (defaults to telemetry key names)")
+            widgetTitle: z.string().optional().describe("Optional widget title (defaults to telemetry key names)"),
+            telemetryKeys: z.array(z.string()).optional().describe("Optional specific telemetry keys to visualize in the widget")
         })
     }),
     __metadata("design:type", Function),

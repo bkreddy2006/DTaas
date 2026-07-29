@@ -11,6 +11,7 @@ export declare class ThingsBoardConfig {
     static hasGeminiConfig(): boolean;
     static getUrl(): string;
     static getApiKey(): string;
+    static getAuthHeaderValue(): string;
     static getGeminiApiKey(): string;
 }
 //# sourceMappingURL=tb-config.d.ts.map

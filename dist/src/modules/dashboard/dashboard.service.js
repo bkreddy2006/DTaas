@@ -7,18 +7,18 @@ import { ThingsBoardConfig } from "../thingsboard/tb-config.js";
 const TB_URL = {
     toString() {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return ThingsBoardConfig.getUrl();
     }
 };
 const headers = () => {
     if (!ThingsBoardConfig.hasConfig()) {
-        throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
     }
     return {
         "Content-Type": "application/json",
-        "X-Authorization": `ApiKey ${ThingsBoardConfig.getApiKey()}`
+        "X-Authorization": ThingsBoardConfig.getAuthHeaderValue()
     };
 };
 // ─── Widget type map ──────────────────────────────────────────────────────────
@@ -108,6 +108,16 @@ async function fetchWidgetDescriptor(kind) {
 export class DashboardService {
     // ── Dashboard CRUD ────────────────────────────────────────────────────────
     async createDashboard(title) {
+        try {
+            const existingId = await this.resolveDashboardId(title);
+            if (existingId) {
+                const response = await axios.get(`${TB_URL}/api/dashboard/${existingId}`, { headers: headers() });
+                return response.data;
+            }
+        }
+        catch (e) {
+            // Ignore errors (e.g. not found) and proceed to create
+        }
         const response = await axios.post(`${TB_URL}/api/dashboard`, {
             title,
             configuration: {
@@ -203,21 +213,40 @@ export class DashboardService {
         await axios.delete(`${TB_URL}/api/dashboard/${dashboardId}`, { headers: headers() });
     }
     // ── Smart widget add ──────────────────────────────────────────────────────
-    async addSmartWidget(dashboardId, deviceId, widgetTitle) {
-        // 1. Fetch the device's telemetry keys from ThingsBoard
-        let keysRes = await axios.get(`${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/keys/timeseries`, { headers: headers() });
-        let telemetryKeys = keysRes.data;
-        if (telemetryKeys.length === 0) {
-            const randomTelemetry = {
-                temperature: Math.floor(Math.random() * 15) + 20,
-                humidity: Math.floor(Math.random() * 40) + 40,
-                battery: Math.floor(Math.random() * 40) + 60,
-                pressure: Math.floor(Math.random() * 30) + 980
-            };
-            await axios.post(`${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/timeseries/ANY`, randomTelemetry, { headers: headers() });
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            keysRes = await axios.get(`${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/keys/timeseries`, { headers: headers() });
+    async addSmartWidget(dashboardId, deviceId, widgetTitle, telemetryKeysInput) {
+        let telemetryKeys = telemetryKeysInput ?? [];
+        if (telemetryKeys.length > 0) {
+            // Write initial dummy telemetry for these keys so ThingsBoard is aware of them
+            const dummyData = {};
+            for (const key of telemetryKeys) {
+                if (key.toLowerCase().includes("battery") || key.toLowerCase().includes("level") || key.toLowerCase().includes("fill")) {
+                    dummyData[key] = 100;
+                }
+                else if (key.toLowerCase().includes("status") || key.toLowerCase().includes("mode")) {
+                    dummyData[key] = "idle";
+                }
+                else {
+                    dummyData[key] = 0;
+                }
+            }
+            await axios.post(`${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/timeseries/ANY`, dummyData, { headers: headers() });
+        }
+        else {
+            // 1. Fetch the device's telemetry keys from ThingsBoard
+            let keysRes = await axios.get(`${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/keys/timeseries`, { headers: headers() });
             telemetryKeys = keysRes.data;
+            if (telemetryKeys.length === 0) {
+                const randomTelemetry = {
+                    temperature: Math.floor(Math.random() * 15) + 20,
+                    humidity: Math.floor(Math.random() * 40) + 40,
+                    battery: Math.floor(Math.random() * 40) + 60,
+                    pressure: Math.floor(Math.random() * 30) + 980
+                };
+                await axios.post(`${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/timeseries/ANY`, randomTelemetry, { headers: headers() });
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                keysRes = await axios.get(`${TB_URL}/api/plugins/telemetry/DEVICE/${deviceId}/keys/timeseries`, { headers: headers() });
+                telemetryKeys = keysRes.data;
+            }
         }
         // 2. Pick the best widget type based on key names + count
         const kind = pickWidgetKind(telemetryKeys);

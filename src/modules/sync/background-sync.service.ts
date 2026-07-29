@@ -29,12 +29,12 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
             console.warn("⚠️ Background Telemetry Sync is disabled: DATABASE_URL is not configured.");
             return;
         }
-        console.log("🚀 Starting Background Telemetry Synchronization Service...");
+        console.error("🚀 Starting Background Telemetry Synchronization Service...");
         this.start();
     }
 
     async onModuleDestroy() {
-        console.log("🛑 Stopping Background Telemetry Synchronization Service...");
+        console.error("🛑 Stopping Background Telemetry Synchronization Service...");
         this.stop();
     }
 
@@ -69,7 +69,7 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
     async syncRegisteredDevices(): Promise<void> {
         if (!this.dataService.hasPool()) return;
         if (this.isSyncing) {
-            console.log("⚠️ Background sync is already running. Skipping overlap execution.");
+            console.error("⚠️ Background sync is already running. Skipping overlap execution.");
             return;
         }
 
@@ -85,7 +85,7 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
                 // Sync if device is due
                 if (lastSynced + intervalMs <= now) {
                     try {
-                        console.log(`Syncing device ${device.deviceId} incrementally...`);
+                        console.error(`Syncing device ${device.deviceId} incrementally...`);
                         await this.syncDeviceIncremental(device.deviceId, lastSynced, now);
                         
                         // Reset failure counter on success
@@ -169,7 +169,7 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
             throw new Error("metrics/keys list cannot be empty");
         }
 
-        console.log(`Backfilling history for device ${deviceId} [${startTs} -> ${endTs}] for keys: ${keyList.join(",")}`);
+        console.error(`Backfilling history for device ${deviceId} [${startTs} -> ${endTs}] for keys: ${keyList.join(",")}`);
         
         // Fetch telemetry from ThingsBoard
         const telemetryData = await this.tbClient.getTelemetryRange(deviceId, keyList, startTs, endTs);
@@ -191,13 +191,13 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
         }
 
         if (readings.length === 0) {
-            console.log(`No historical data found on ThingsBoard for device ${deviceId} in the range.`);
+            console.error(`No historical data found on ThingsBoard for device ${deviceId} in the range.`);
             return 0;
         }
 
         // Insert into Neon
         const rowCount = await this.dataService.insertReadingsBatch(readings);
-        console.log(`Successfully backfilled ${rowCount} telemetry rows into Neon for device ${deviceId}`);
+        console.error(`Successfully backfilled ${rowCount} telemetry rows into Neon for device ${deviceId}`);
         return rowCount;
     }
 
@@ -208,7 +208,7 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
         // Fetch all telemetry keys first
         const keys = await this.tbClient.getTelemetryKeys(deviceId);
         if (keys.length === 0) {
-            console.log(`No telemetry keys found for device ${deviceId}.`);
+            console.error(`No telemetry keys found for device ${deviceId}.`);
             await this.registryService.updateLastSync(deviceId, endTs, "success", "No telemetry keys found");
             return 0;
         }
@@ -240,7 +240,7 @@ export class BackgroundSyncService implements OnApplicationBootstrap, OnModuleDe
 
         // Update registry with success status
         await this.registryService.updateLastSync(deviceId, endTs, "success", null);
-        console.log(`Incremental sync completed for device ${deviceId}. Inserted ${inserted} rows.`);
+        console.error(`Incremental sync completed for device ${deviceId}. Inserted ${inserted} rows.`);
         return inserted;
     }
 }

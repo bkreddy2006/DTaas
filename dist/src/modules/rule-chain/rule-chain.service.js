@@ -6,23 +6,33 @@ import { ThingsBoardConfig } from "../thingsboard/tb-config.js";
 const TB_URL = {
     toString() {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return ThingsBoardConfig.getUrl();
     }
 };
 const headers = () => {
     if (!ThingsBoardConfig.hasConfig()) {
-        throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+        throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
     }
     return {
         "Content-Type": "application/json",
-        "X-Authorization": `ApiKey ${ThingsBoardConfig.getApiKey()}`
+        "X-Authorization": ThingsBoardConfig.getAuthHeaderValue()
     };
 };
 export class RuleChainService {
     // ── Rule Chain CRUD ───────────────────────────────────────────────────────
     async createRuleChain(name, root = false, debugMode = false) {
+        try {
+            const existingId = await this.resolveRuleChainId(name);
+            if (existingId) {
+                const response = await axios.get(`${TB_URL}/api/ruleChain/${existingId}`, { headers: headers() });
+                return response.data;
+            }
+        }
+        catch (e) {
+            // Ignore errors (e.g. not found) and proceed to create
+        }
         const response = await axios.post(`${TB_URL}/api/ruleChain`, {
             name,
             root,

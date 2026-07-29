@@ -298,7 +298,7 @@ export class ThingsBoardTools {
                                         valueType: input.conditionValueType,
                                         value: null,
                                         predicate: {
-                                            type: input.conditionValueType,
+                                            type: `${input.conditionValueType}_FILTER`,
                                             operation: input.conditionOperation,
                                             value: {
                                                 defaultValue: input.conditionThreshold,

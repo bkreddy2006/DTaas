@@ -25,8 +25,7 @@ export class ThingsBoardConfig {
         fs.writeFileSync(this.configPath, JSON.stringify(merged, null, 2), "utf8");
     }
     static hasConfig() {
-        const config = this.get();
-        return !!(config.tbUrl && config.tbApiKey);
+        return !!(this.getUrl() && this.getApiKey());
     }
     static hasGeminiConfig() {
         const config = this.get();
@@ -39,6 +38,13 @@ export class ThingsBoardConfig {
     static getApiKey() {
         const config = this.get();
         return config.tbApiKey || process.env.TB_API_KEY || "";
+    }
+    static getAuthHeaderValue() {
+        const key = this.getApiKey();
+        if (key.startsWith("eyJ")) {
+            return `Bearer ${key}`;
+        }
+        return `ApiKey ${key}`;
     }
     static getGeminiApiKey() {
         const config = this.get();

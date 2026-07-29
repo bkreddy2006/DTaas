@@ -34,8 +34,7 @@ export class ThingsBoardConfig {
     }
 
     static hasConfig(): boolean {
-        const config = this.get();
-        return !!(config.tbUrl && config.tbApiKey);
+        return !!(this.getUrl() && this.getApiKey());
     }
 
     static hasGeminiConfig(): boolean {
@@ -51,6 +50,14 @@ export class ThingsBoardConfig {
     static getApiKey(): string {
         const config = this.get();
         return config.tbApiKey || process.env.TB_API_KEY || "";
+    }
+
+    static getAuthHeaderValue(): string {
+        const key = this.getApiKey();
+        if (key.startsWith("eyJ")) {
+            return `Bearer ${key}`;
+        }
+        return `ApiKey ${key}`;
     }
 
     static getGeminiApiKey(): string {

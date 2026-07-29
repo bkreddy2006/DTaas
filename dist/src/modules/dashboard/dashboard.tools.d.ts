@@ -29,6 +29,7 @@ export declare class DashboardTools {
         dashboard?: string;
         deviceId: string;
         widgetTitle?: string;
+        telemetryKeys?: string[];
     }, ctx: ExecutionContext): Promise<{
         success: boolean;
         message: string;

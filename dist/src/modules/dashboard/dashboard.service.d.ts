@@ -5,7 +5,7 @@ export declare class DashboardService {
     resolveWidgetId(dashboardId: string, widgetIdentifier: string): Promise<string>;
     listDashboards(pageSize?: number, page?: number): Promise<any>;
     deleteDashboard(dashboardIdOrName: string): Promise<void>;
-    addSmartWidget(dashboardId: string | undefined, deviceId: string, widgetTitle?: string): Promise<{
+    addSmartWidget(dashboardId: string | undefined, deviceId: string, widgetTitle?: string, telemetryKeysInput?: string[]): Promise<{
         dashboardId: any;
         widgetId: string;
         widgetKind: "timeseries_chart" | "value_card" | "gauge" | "alarm_table";

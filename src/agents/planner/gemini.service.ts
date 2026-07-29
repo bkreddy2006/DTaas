@@ -33,7 +33,7 @@ export class GeminiService {
 
         } catch (err) {
 
-            console.log(`${model} failed`);
+            console.error(`${model} failed`);
 
         }
 

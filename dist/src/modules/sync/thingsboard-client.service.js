@@ -15,13 +15,13 @@ dotenv.config();
 let ThingsBoardClientService = class ThingsBoardClientService {
     get TB_URL() {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return ThingsBoardConfig.getUrl();
     }
     get API_KEY() {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return ThingsBoardConfig.getApiKey() || undefined;
     }
@@ -48,7 +48,7 @@ let ThingsBoardClientService = class ThingsBoardClientService {
         // If ApiKey is provided and no username/password, use ApiKey auth
         if (this.API_KEY && !this.USERNAME) {
             return {
-                "X-Authorization": `ApiKey ${this.API_KEY}`,
+                "X-Authorization": ThingsBoardConfig.getAuthHeaderValue(),
             };
         }
         // Otherwise use JWT token
@@ -63,7 +63,7 @@ let ThingsBoardClientService = class ThingsBoardClientService {
         // Fallback to ApiKey if available, else empty
         if (this.API_KEY) {
             return {
-                "X-Authorization": `ApiKey ${this.API_KEY}`,
+                "X-Authorization": ThingsBoardConfig.getAuthHeaderValue(),
             };
         }
         return {};

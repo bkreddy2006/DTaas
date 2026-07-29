@@ -9,14 +9,14 @@ dotenv.config();
 export class ThingsBoardClientService {
     private get TB_URL(): string {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return ThingsBoardConfig.getUrl();
     }
 
     private get API_KEY(): string | undefined {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return ThingsBoardConfig.getApiKey() || undefined;
     }
@@ -48,7 +48,7 @@ export class ThingsBoardClientService {
         // If ApiKey is provided and no username/password, use ApiKey auth
         if (this.API_KEY && !this.USERNAME) {
             return {
-                "X-Authorization": `ApiKey ${this.API_KEY}`,
+                "X-Authorization": ThingsBoardConfig.getAuthHeaderValue(),
             };
         }
 
@@ -66,7 +66,7 @@ export class ThingsBoardClientService {
         // Fallback to ApiKey if available, else empty
         if (this.API_KEY) {
             return {
-                "X-Authorization": `ApiKey ${this.API_KEY}`,
+                "X-Authorization": ThingsBoardConfig.getAuthHeaderValue(),
             };
         }
 

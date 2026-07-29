@@ -112,7 +112,7 @@ Create two alarms:
         if (!ThingsBoardConfig.hasConfig()) {
             return {
                 success: false,
-                message: "Error: ThingsBoard connection is not configured. Please use the 'configure_credentials' tool first to configure your ThingsBoard URL and API Key before creating or building anything."
+                message: "Error: ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool."
             };
         }
 
@@ -199,7 +199,7 @@ Create two alarms:
         if (!ThingsBoardConfig.hasConfig()) {
             return {
                 success: false,
-                message: "Error: ThingsBoard connection is not configured. Please use the 'configure_credentials' tool first to configure your ThingsBoard URL and API Key before creating or building anything."
+                message: "Error: ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool."
             };
         }
 

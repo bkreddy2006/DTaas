@@ -5,21 +5,30 @@ dotenv.config();
 export class ThingsBoardService {
     get TB_URL() {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return ThingsBoardConfig.getUrl();
     }
     get headers() {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return {
             "Content-Type": "application/json",
-            "X-Authorization": `ApiKey ${ThingsBoardConfig.getApiKey()}`
+            "X-Authorization": ThingsBoardConfig.getAuthHeaderValue()
         };
     }
     // --- Device Operations ---
     async createDevice(deviceName, deviceType, label) {
+        try {
+            const existing = await this.getDeviceByName(deviceName);
+            if (existing) {
+                return existing;
+            }
+        }
+        catch (e) {
+            // Ignore errors (e.g. 404 not found) and proceed to create
+        }
         const response = await axios.post(`${this.TB_URL}/api/device`, { name: deviceName, type: deviceType, label: label ?? deviceType }, { headers: this.headers });
         return response.data;
     }
@@ -63,6 +72,15 @@ export class ThingsBoardService {
     }
     // --- Customer Operations ---
     async createCustomer(title, email, phone, address, city, country) {
+        try {
+            const existing = await this.getCustomerByTitle(title);
+            if (existing) {
+                return existing;
+            }
+        }
+        catch (e) {
+            // Ignore errors (e.g. 404 not found) and proceed to create
+        }
         const response = await axios.post(`${this.TB_URL}/api/customer`, { title, email, phone, address, city, country }, { headers: this.headers });
         return response.data;
     }

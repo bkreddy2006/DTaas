@@ -21,7 +21,7 @@ export class GeminiService {
                 return response.text ?? "";
             }
             catch (err) {
-                console.log(`${model} failed`);
+                console.error(`${model} failed`);
             }
         }
         throw new Error("All Gemini models failed.");

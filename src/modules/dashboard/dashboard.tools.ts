@@ -73,11 +73,12 @@ The server automatically:
         inputSchema: z.object({
             dashboard:   z.string().optional().describe("UUID or name of the target dashboard. If not specified, the server auto-selects the most recently updated dashboard."),
             deviceId:    z.string().describe("UUID of the device to visualise"),
-            widgetTitle: z.string().optional().describe("Optional widget title (defaults to telemetry key names)")
+            widgetTitle: z.string().optional().describe("Optional widget title (defaults to telemetry key names)"),
+            telemetryKeys: z.array(z.string()).optional().describe("Optional specific telemetry keys to visualize in the widget")
         })
     })
     async addWidgetToDashboard(
-        input: { dashboard?: string; deviceId: string; widgetTitle?: string },
+        input: { dashboard?: string; deviceId: string; widgetTitle?: string; telemetryKeys?: string[] },
         ctx: ExecutionContext
     ) {
         ctx.logger.info(`Adding widget to dashboard "${input.dashboard ?? "(most recent)"}" for device ${input.deviceId}`);
@@ -85,7 +86,8 @@ The server automatically:
             const result = await service.addSmartWidget(
                 input.dashboard,
                 input.deviceId,
-                input.widgetTitle
+                input.widgetTitle,
+                input.telemetryKeys
             );
             return {
                 success:       true,

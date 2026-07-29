@@ -7,24 +7,32 @@ dotenv.config();
 export class ThingsBoardService {
     private get TB_URL(): string {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return ThingsBoardConfig.getUrl();
     }
 
     private get headers() {
         if (!ThingsBoardConfig.hasConfig()) {
-            throw new Error("ThingsBoard connection is not configured. Please use the 'configure_thingsboard' tool first to configure your ThingsBoard URL and API Key before creating or building anything.");
+            throw new Error("ThingsBoard connection is not configured. Ask the user in the chat for their ThingsBoard URL and API Key (or Tenant Admin JWT token) so you can configure it on their own cloud instance using the 'configure_credentials' tool.");
         }
         return {
             "Content-Type": "application/json",
-            "X-Authorization": `ApiKey ${ThingsBoardConfig.getApiKey()}`
+            "X-Authorization": ThingsBoardConfig.getAuthHeaderValue()
         };
     }
 
 // --- Device Operations ---
 
 async createDevice(deviceName: string, deviceType: string, label?: string) {
+    try {
+        const existing = await this.getDeviceByName(deviceName);
+        if (existing) {
+            return existing;
+        }
+    } catch (e) {
+        // Ignore errors (e.g. 404 not found) and proceed to create
+    }
     const response = await axios.post(
         `${this.TB_URL}/api/device`,
         { name: deviceName, type: deviceType, label: label ?? deviceType },
@@ -119,6 +127,14 @@ async saveAlarm(alarmData: any) {
     // --- Customer Operations ---
 
     async createCustomer(title: string, email?: string, phone?: string, address?: string, city?: string, country?: string) {
+        try {
+            const existing = await this.getCustomerByTitle(title);
+            if (existing) {
+                return existing;
+            }
+        } catch (e) {
+            // Ignore errors (e.g. 404 not found) and proceed to create
+        }
         const response = await axios.post(
             `${this.TB_URL}/api/customer`,
             { title, email, phone, address, city, country },
