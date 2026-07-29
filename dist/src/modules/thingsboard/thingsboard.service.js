@@ -208,6 +208,30 @@ export class ThingsBoardService {
      * Provisions an emulator device entity in ThingsBoard
      */
     async createEmulatorDevice(deviceName, emulatorType = "smart-home-energy-hub", scenario = "Typical Day", telemetryRateSeconds = 5) {
+        try {
+            const existing = await this.getDeviceByName(deviceName);
+            if (existing) {
+                // Update existing device to act as an emulator
+                existing.type = emulatorType;
+                existing.additionalInfo = {
+                    ...(existing.additionalInfo ?? {}),
+                    isEmulator: true,
+                    emulatorScenario: scenario,
+                    telemetryRate: telemetryRateSeconds
+                };
+                const deviceResponse = await axios.post(`${this.TB_URL}/api/device`, existing, { headers: this.headers });
+                return {
+                    device: deviceResponse.data,
+                    emulatorType,
+                    scenario,
+                    telemetryRateSeconds,
+                    status: "RUNNING"
+                };
+            }
+        }
+        catch (e) {
+            // Ignore error and proceed to create
+        }
         // Create standard device marked as EMULATOR in type/additionalInfo
         const deviceResponse = await axios.post(`${this.TB_URL}/api/device`, {
             name: deviceName,
